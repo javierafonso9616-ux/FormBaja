@@ -47,7 +47,7 @@
             this.materialCardAnadirPrograma.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialCardAnadirPrograma.Name = "materialCardAnadirPrograma";
             this.materialCardAnadirPrograma.Padding = new System.Windows.Forms.Padding(14);
-            this.materialCardAnadirPrograma.Size = new System.Drawing.Size(794, 383);
+            this.materialCardAnadirPrograma.Size = new System.Drawing.Size(515, 213);
             this.materialCardAnadirPrograma.TabIndex = 0;
             // 
             // BtnGuardarPrograma
@@ -57,12 +57,12 @@
             this.BtnGuardarPrograma.Depth = 0;
             this.BtnGuardarPrograma.HighEmphasis = true;
             this.BtnGuardarPrograma.Icon = null;
-            this.BtnGuardarPrograma.Location = new System.Drawing.Point(618, 327);
+            this.BtnGuardarPrograma.Location = new System.Drawing.Point(409, 157);
             this.BtnGuardarPrograma.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.BtnGuardarPrograma.MouseState = MaterialSkin.MouseState.HOVER;
             this.BtnGuardarPrograma.Name = "BtnGuardarPrograma";
             this.BtnGuardarPrograma.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.BtnGuardarPrograma.Size = new System.Drawing.Size(158, 36);
+            this.BtnGuardarPrograma.Size = new System.Drawing.Size(88, 36);
             this.BtnGuardarPrograma.TabIndex = 3;
             this.BtnGuardarPrograma.Text = "Guardar";
             this.BtnGuardarPrograma.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -80,7 +80,7 @@
             this.TxtPrograma.HideSelection = true;
             this.TxtPrograma.Hint = "Nuevo programa";
             this.TxtPrograma.LeadingIcon = null;
-            this.TxtPrograma.Location = new System.Drawing.Point(272, 167);
+            this.TxtPrograma.Location = new System.Drawing.Point(132, 82);
             this.TxtPrograma.MaxLength = 32767;
             this.TxtPrograma.MouseState = MaterialSkin.MouseState.OUT;
             this.TxtPrograma.Name = "TxtPrograma";
@@ -101,9 +101,10 @@
             // 
             // FormNuevoPrograma
             // 
+            this.AcceptButton = this.BtnGuardarPrograma;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(521, 280);
             this.Controls.Add(this.materialCardAnadirPrograma);
             this.Name = "FormNuevoPrograma";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

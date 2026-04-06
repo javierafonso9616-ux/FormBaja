@@ -20,8 +20,14 @@ namespace FormBaja.Forms
 
     public partial class FormNuevoUsuario : MaterialForm
     {
+        //--------------------------------------------------------------
+        // ACCESO A DATOS
+        //--------------------------------------------------------------
         public readonly AccesoDatos accesoDatos = new AccesoDatos();
 
+        //--------------------------------------------------------------
+        // CREACION DEL FOMULARIO INICIAL
+        //--------------------------------------------------------------
         public FormNuevoUsuario()
         {
             InitializeComponent();
@@ -30,9 +36,13 @@ namespace FormBaja.Forms
           
         }
 
+        //--------------------------------------------------------------
+        // BOTONES
+        //--------------------------------------------------------------
 
         private void BtnGuardarUsuario_Click(object sender, EventArgs e)
         {
+            // RECOGEMOS LOS DATOS DEL USUARIO
             Usuarios usuarioAGuardar = new Usuarios
             {
                 Dni = TxtDNI.Text,
@@ -43,12 +53,13 @@ namespace FormBaja.Forms
          
             
             try
+                // LLAMAMOS A LA FUNCION QUE INSERTA EL USUARIO
+                // MOSTRAMOS CONFIRMACION Y CERRAMOS EL FORMULARIO
             {
                 accesoDatos.InsertarUsuario(usuarioAGuardar);
-                MessageBox.Show("Usuario añadido correctamente.");
-                Close();
-                
+               
             }
+            // SI FALLA SE MUESTRA EL ERROR Y SE LIMPIAN LOS CAMPOS
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
@@ -59,6 +70,10 @@ namespace FormBaja.Forms
             }
 
             
+            
+
+
         }
+
     }
 }

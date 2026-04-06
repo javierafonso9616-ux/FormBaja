@@ -1,6 +1,6 @@
 ﻿namespace FormBaja
 {
-    partial class FormBaja
+    partial class FormPrincipal
     {
         /// <summary>
         /// Variable del diseñador necesaria.

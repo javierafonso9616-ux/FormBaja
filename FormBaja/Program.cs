@@ -16,7 +16,7 @@ namespace FormBaja
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormBaja());
+            Application.Run(new FormPrincipal());
         }
     }
 }
