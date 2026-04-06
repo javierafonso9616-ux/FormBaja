@@ -11,50 +11,27 @@ using FormBaja.Entidades;
 
 namespace FormBaja.Datos
 {
-    internal class AccesoDatos
+    public class AccesoDatos
     {
         private readonly string cadenaConexion = ConfigurationManager.ConnectionStrings["CadenaUsuario"].ConnectionString;
 
-
-        public List<Usuarios> LeerUsuarios()
+        // OBTENER LOS DATOS DE LA BASE DE DATOS
+        public DataTable LeerUsuarios()
         {
-            List<Usuarios> lista = new List<Usuarios>();
-
-
-            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            DataTable tabla = new DataTable();
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion)) 
             {
-
                 try
                 {
                     conexion.Open();
-
-
-                    string consulta = "SELECT * FROM Usuarios";
-
-
-                    SqlCommand cmd = new SqlCommand(consulta, conexion);
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    string consulta = "SELECT * FROM Usuarios"; 
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            Usuarios usuario = new Usuarios {
-                            
-                                // USUARIOS
-                                Dni = reader["DNI"].ToString(),
-                                Nombre = reader["NOMBRE"].ToString(),
-                                Apellidos = reader["APELLIDOS"].ToString(),
-
-                                // PROGRAMAS
-                                Milena = reader["MILENA"].ToString(),
-
-                                 
-                            };
-
-
-
+                            // Esto carga automáticamente TODAS las columnas existentes de forma dinámica
+                            tabla.Load(reader);
                         }
-
                     }
                 }
                 catch (Exception)
@@ -62,10 +39,56 @@ namespace FormBaja.Datos
                     throw;
                 }
             }
-
-
-
-            return lista;
+            return tabla;
         }
+
+        // INSERTAR USUARIO EN LA BASE DE DATOS
+        public void InsertarUsuario(Usuarios nuevoUsuario)
+        {
+            
+            string consulta = "INSERT INTO Usuarios (DNI, NOMBRE, APELLIDOS) VALUES (@dni, @nombre, @apellidos)";
+
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                try
+                {
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                    {
+                        
+                        cmd.Parameters.AddWithValue("@dni", nuevoUsuario.Dni);
+                        cmd.Parameters.AddWithValue("@nombre", nuevoUsuario.Nombre);
+
+                        // Si el apellido es nulo, se inserta como NULL en la base de datos
+                        cmd.Parameters.AddWithValue("@apellidos", (object)nuevoUsuario.Apellidos ?? DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex) // excepcion sql 
+                {
+                    // 2627: Violación de Primary Key / 2601: Índice único duplicado
+                    if (ex.Number == 2627 || ex.Number == 2601)
+                    {
+                        throw new Exception("El usuario con DNI: " + nuevoUsuario.Dni + "  ya existe");
+                    }
+                    else
+                    {
+                        throw new Exception("Error de base de datos: " + ex.Message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    
+                    throw new Exception("Error al insertar el usuario: " + ex.Message);
+                }
+                
+            }
+        }
+
+        public void AnadirPrograma(Usuarios nuevoPrograma)
+        {
+        }
+
     }
 }

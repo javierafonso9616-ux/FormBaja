@@ -186,10 +186,28 @@
     <Compile Include="Forms\FormBaja.Designer.cs">
       <DependentUpon>FormBaja.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormNuevoPrograma.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormNuevoPrograma.Designer.cs">
+      <DependentUpon>FormNuevoPrograma.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormNuevoUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormNuevoUsuario.Designer.cs">
+      <DependentUpon>FormNuevoUsuario.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FormBaja.resx">
       <DependentUpon>FormBaja.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNuevoPrograma.resx">
+      <DependentUpon>FormNuevoPrograma.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNuevoUsuario.resx">
+      <DependentUpon>FormNuevoUsuario.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

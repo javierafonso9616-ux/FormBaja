@@ -56,7 +56,7 @@
             this.materialCardBajaSuperior.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialCardBajaSuperior.Name = "materialCardBajaSuperior";
             this.materialCardBajaSuperior.Padding = new System.Windows.Forms.Padding(14);
-            this.materialCardBajaSuperior.Size = new System.Drawing.Size(1550, 173);
+            this.materialCardBajaSuperior.Size = new System.Drawing.Size(1914, 173);
             this.materialCardBajaSuperior.TabIndex = 0;
             // 
             // BtnNuevoPrograma
@@ -66,7 +66,7 @@
             this.BtnNuevoPrograma.Depth = 0;
             this.BtnNuevoPrograma.HighEmphasis = true;
             this.BtnNuevoPrograma.Icon = null;
-            this.BtnNuevoPrograma.Location = new System.Drawing.Point(1243, 92);
+            this.BtnNuevoPrograma.Location = new System.Drawing.Point(1289, 92);
             this.BtnNuevoPrograma.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.BtnNuevoPrograma.MouseState = MaterialSkin.MouseState.HOVER;
             this.BtnNuevoPrograma.Name = "BtnNuevoPrograma";
@@ -87,7 +87,7 @@
             this.BtnNuevoUsuario.Depth = 0;
             this.BtnNuevoUsuario.HighEmphasis = true;
             this.BtnNuevoUsuario.Icon = null;
-            this.BtnNuevoUsuario.Location = new System.Drawing.Point(1243, 44);
+            this.BtnNuevoUsuario.Location = new System.Drawing.Point(1289, 44);
             this.BtnNuevoUsuario.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.BtnNuevoUsuario.MouseState = MaterialSkin.MouseState.HOVER;
             this.BtnNuevoUsuario.Name = "BtnNuevoUsuario";
@@ -110,7 +110,7 @@
             this.TxtBuscarDNIoNombre.HideSelection = true;
             this.TxtBuscarDNIoNombre.Hint = "DNI";
             this.TxtBuscarDNIoNombre.LeadingIcon = null;
-            this.TxtBuscarDNIoNombre.Location = new System.Drawing.Point(513, 62);
+            this.TxtBuscarDNIoNombre.Location = new System.Drawing.Point(559, 62);
             this.TxtBuscarDNIoNombre.MaxLength = 32767;
             this.TxtBuscarDNIoNombre.MouseState = MaterialSkin.MouseState.OUT;
             this.TxtBuscarDNIoNombre.Name = "TxtBuscarDNIoNombre";
@@ -142,7 +142,7 @@
             this.materialCardBajaInferior.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialCardBajaInferior.Name = "materialCardBajaInferior";
             this.materialCardBajaInferior.Padding = new System.Windows.Forms.Padding(14);
-            this.materialCardBajaInferior.Size = new System.Drawing.Size(1550, 644);
+            this.materialCardBajaInferior.Size = new System.Drawing.Size(1914, 840);
             this.materialCardBajaInferior.TabIndex = 1;
             // 
             // DgvBajas
@@ -151,7 +151,7 @@
             this.DgvBajas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DgvBajas.Location = new System.Drawing.Point(14, 14);
             this.DgvBajas.Name = "DgvBajas";
-            this.DgvBajas.Size = new System.Drawing.Size(1522, 616);
+            this.DgvBajas.Size = new System.Drawing.Size(1886, 812);
             this.DgvBajas.TabIndex = 0;
             // 
             // pictureBox1
@@ -168,12 +168,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1556, 884);
+            this.ClientSize = new System.Drawing.Size(1920, 1080);
             this.Controls.Add(this.materialCardBajaInferior);
             this.Controls.Add(this.materialCardBajaSuperior);
             this.Name = "FormBaja";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Baja";
+            this.Load += new System.EventHandler(this.FormBaja_Load);
             this.materialCardBajaSuperior.ResumeLayout(false);
             this.materialCardBajaSuperior.PerformLayout();
             this.materialCardBajaInferior.ResumeLayout(false);
