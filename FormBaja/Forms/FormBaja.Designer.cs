@@ -34,14 +34,17 @@
             this.TxtBuscarDNIoNombre = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialCardBajaInferior = new MaterialSkin.Controls.MaterialCard();
             this.DgvBajas = new System.Windows.Forms.DataGridView();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.materialCardBajaSuperior.SuspendLayout();
             this.materialCardBajaInferior.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvBajas)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // materialCardBajaSuperior
             // 
             this.materialCardBajaSuperior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.materialCardBajaSuperior.Controls.Add(this.pictureBox1);
             this.materialCardBajaSuperior.Controls.Add(this.BtnNuevoPrograma);
             this.materialCardBajaSuperior.Controls.Add(this.BtnNuevoUsuario);
             this.materialCardBajaSuperior.Controls.Add(this.TxtBuscarDNIoNombre);
@@ -151,6 +154,16 @@
             this.DgvBajas.Size = new System.Drawing.Size(1522, 616);
             this.DgvBajas.TabIndex = 0;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::FormBaja.Properties.Resources.Logotipo_Cruz_Roja_Horizontal_transparente_letras_negras;
+            this.pictureBox1.Location = new System.Drawing.Point(17, 17);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(451, 139);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
+            // 
             // FormBaja
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -165,6 +178,7 @@
             this.materialCardBajaSuperior.PerformLayout();
             this.materialCardBajaInferior.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DgvBajas)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -177,6 +191,7 @@
         private MaterialSkin.Controls.MaterialButton BtnNuevoPrograma;
         private MaterialSkin.Controls.MaterialButton BtnNuevoUsuario;
         private System.Windows.Forms.DataGridView DgvBajas;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
