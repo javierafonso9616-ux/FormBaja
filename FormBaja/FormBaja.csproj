@@ -186,19 +186,10 @@
     <Compile Include="Forms\FormBaja.Designer.cs">
       <DependentUpon>FormBaja.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormInicial.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormInicial.Designer.cs">
-      <DependentUpon>FormInicial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FormBaja.resx">
       <DependentUpon>FormBaja.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInicial.resx">
-      <DependentUpon>FormInicial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
