@@ -44,10 +44,12 @@ namespace FormBaja.Forms
             
             try
                 // LLAMAMOS A LA FUNCION QUE INSERTA EL PROGRAMA
-                // MOSTREAMOS CONFIRMACION Y CERRAMOS EL FORMULARIO
+                
             {
                 accesoDatos.AñadirColumnaPrograma(nombrePrograma);
                
+                TxtPrograma.Clear();
+                
 
                 
             }

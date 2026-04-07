@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             this.materialCardBajaSuperior = new MaterialSkin.Controls.MaterialCard();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.BtnNuevoPrograma = new MaterialSkin.Controls.MaterialButton();
             this.BtnNuevoUsuario = new MaterialSkin.Controls.MaterialButton();
             this.TxtBuscarDNIoNombre = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialCardBajaInferior = new MaterialSkin.Controls.MaterialCard();
             this.DgvBajas = new System.Windows.Forms.DataGridView();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.materialCardBajaSuperior.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.materialCardBajaInferior.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvBajas)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // materialCardBajaSuperior
@@ -58,6 +58,16 @@
             this.materialCardBajaSuperior.Padding = new System.Windows.Forms.Padding(14);
             this.materialCardBajaSuperior.Size = new System.Drawing.Size(1914, 173);
             this.materialCardBajaSuperior.TabIndex = 0;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::FormBaja.Properties.Resources.Logotipo_Cruz_Roja_Horizontal_transparente_letras_negras;
+            this.pictureBox1.Location = new System.Drawing.Point(17, 17);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(451, 139);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
             // 
             // BtnNuevoPrograma
             // 
@@ -104,7 +114,7 @@
             // 
             this.TxtBuscarDNIoNombre.AnimateReadOnly = false;
             this.TxtBuscarDNIoNombre.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.TxtBuscarDNIoNombre.CharacterCasing = System.Windows.Forms.CharacterCasing.Normal;
+            this.TxtBuscarDNIoNombre.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.TxtBuscarDNIoNombre.Depth = 0;
             this.TxtBuscarDNIoNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.TxtBuscarDNIoNombre.HideSelection = true;
@@ -153,33 +163,26 @@
             this.DgvBajas.Name = "DgvBajas";
             this.DgvBajas.Size = new System.Drawing.Size(1886, 812);
             this.DgvBajas.TabIndex = 0;
+            this.DgvBajas.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellEnter);
+            this.DgvBajas.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellValueChanged);
+            this.DgvBajas.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvBajas_CurrentCellDirtyStateChanged);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::FormBaja.Properties.Resources.Logotipo_Cruz_Roja_Horizontal_transparente_letras_negras;
-            this.pictureBox1.Location = new System.Drawing.Point(17, 17);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(451, 139);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 3;
-            this.pictureBox1.TabStop = false;
-            // 
-            // FormBaja
+            // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1920, 1080);
             this.Controls.Add(this.materialCardBajaInferior);
             this.Controls.Add(this.materialCardBajaSuperior);
-            this.Name = "FormBaja";
+            this.Name = "FormPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Baja";
             this.Load += new System.EventHandler(this.FormBaja_Load);
             this.materialCardBajaSuperior.ResumeLayout(false);
             this.materialCardBajaSuperior.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.materialCardBajaInferior.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DgvBajas)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }

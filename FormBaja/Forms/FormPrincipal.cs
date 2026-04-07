@@ -50,7 +50,7 @@ namespace FormBaja
         private void FormBaja_Load(object sender, EventArgs e)
         {
             ConfigurarGrid();
-
+            accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
 
 
         }
@@ -78,19 +78,98 @@ namespace FormBaja
             }
         }
 
+        private void ConvertirCeldasEnDesplegables() {
+            // Recorremos todas las columnas a partir de la 3 (donde empiezan los programas)
+            // DNI (0), NOMBRE (1), APELLIDOS (2) se quedan como texto
+            for (int i = 3; i < DgvBajas.Columns.Count; i++)
+            {
+                string nombreColumna = DgvBajas.Columns[i].Name;
 
+                // Creamos la columna de tipo desplegable
+                DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn();
+                comboCol.Name = nombreColumna;
+                comboCol.HeaderText = nombreColumna;
+                comboCol.DataPropertyName = nombreColumna; // Importante para que se enlace al DataTable
+
+                // Añadimos las opciones que mencionaste
+                comboCol.Items.Add("");
+                comboCol.Items.Add("DESACTIVADO");
+
+                // Intercambiamos la columna de texto por la de combo
+                DgvBajas.Columns.RemoveAt(i);
+                DgvBajas.Columns.Insert(i, comboCol);
+            }
+        }
+        
 
         //--------------------------------------------------------------
         // CONFIGURAR EL GRID
         //--------------------------------------------------------------
-        private void ConfigurarGrid() { 
+
+        private void ConfigurarGrid()
+        {
+            ConvertirCeldasEnDesplegables();
+        }
+
+        //--------------------------------------------------------------
+        // EVENTOS DEL GRID
+        //--------------------------------------------------------------
+
+        // EVENTO PARA QUE LOS DESPLEGABLES FUNCIONEN CON UN CLICK EN LUGAR DE DOS POR DEFECTO
+        private void DgvBajas_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (DgvBajas.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn && e.RowIndex != -1)
+            {
+                DgvBajas.BeginEdit(true);
+                ((ComboBox)DgvBajas.EditingControl).DroppedDown = true;
+            }
+        }
+
+        // EVENTO PARA FORZAR AL GRID A "CONFIRMAR" LOS CAMBIOS AL ELEGIR UNA OPCION
+        private void DgvBajas_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (DgvBajas.IsCurrentCellDirty)
+            {
+                DgvBajas.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        // EVENTO QUE MANDA LOS DATOS A LA BASE DE DATOS
         
+        private void DgvBajas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            // EVITAR QUE SE EJECUTE EN EL ENCABEZADO
+            if (e.RowIndex < 0) return;
+
+            // SI LA COLUMNA ES UN DESPLEGABLE
+            if (e.ColumnIndex >= 3)
+            {
+                try
+                {
+                    // PILLAMOS EL DNI (CLAVE PRIMARIA)
+                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
+
+                    // NOMBRE DEL PROGRAMA
+                    string programa = DgvBajas.Columns[e.ColumnIndex].Name;
+
+                    // OBTENEMOS EL NUEVO VALOR
+                    string nuevoValor = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+
+                    // LLAMAMOS AL METODO PARA INSERTAR LOS DATOS NUEVOS
+                    accesoDatos.InsertarDatos(dni, programa, nuevoValor);
+                  
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error al guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         //--------------------------------------------------------------
         // TEXTBOX
         //--------------------------------------------------------------
-       
+
         private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e)
         {
             // Cada vez que el texto cambia, paramos y volvemos a arrancar el timer

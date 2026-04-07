@@ -151,8 +151,34 @@ namespace FormBaja.Datos
             }
         }
 
-        // BUSCAR USUARIO POR DNI O NOMBRE
+        // INSERTAR DATOS
+        public void InsertarDatos(string dni, string nombreColumna, string valor)
+        {
+            // Usamos corchetes [] por si el nombre del programa tiene espacios o caracteres especiales
+            string consulta = $"UPDATE Usuarios SET [{nombreColumna}] = @valor WHERE DNI = @dni";
 
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                try
+                {
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                    {
+                        // Si el valor es vacío, guardamos NULL en la base de datos
+                        cmd.Parameters.AddWithValue("@valor", string.IsNullOrEmpty(valor) ? (object)DBNull.Value : valor);
+                        cmd.Parameters.AddWithValue("@dni", dni);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar: " + ex.Message);
+                }
+            }
+        }
+
+        // BUSCAR USUARIO POR DNI O NOMBRE
         public void BuscarUsuario(DataGridView dgv, string txtBusqueda)
         {
             Console.WriteLine("buscando: " +txtBusqueda);
