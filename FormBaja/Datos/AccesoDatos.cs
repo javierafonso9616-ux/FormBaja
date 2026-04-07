@@ -153,12 +153,13 @@ namespace FormBaja.Datos
 
         // BUSCAR USUARIO POR DNI O NOMBRE
 
-        public void BuscarUsuario(string txtBusqueda) {  
+        public void BuscarUsuario(DataGridView dgv, string txtBusqueda)
+        {
+            Console.WriteLine("buscando: " +txtBusqueda);
+            DataTable tabla = new DataTable();
+            
+            string consulta = "SELECT * FROM Usuarios WHERE DNI LIKE @busqueda OR NOMBRE LIKE @busqueda OR APELLIDOS LIKE @busqueda";
 
-           Console.WriteLine("buscando: " + txtBusqueda);
-        
-            string consulta = $"SELECT * FROM Usuarios WHERE DNI LIKE '%{txtBusqueda}%' OR NOMBRE LIKE '%{txtBusqueda}%'";
-            /*
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))
             {
                 try
@@ -166,20 +167,24 @@ namespace FormBaja.Datos
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
+                        // creamos el parametro de la busqueda y le pasamos el txtBusqueda,
+                        // el % es para que busque en cualquier parte de la cadena de texto en lugar de solo al principio
+                        // o exactamente lo que hayas escrito.
+                        cmd.Parameters.AddWithValue("@busqueda", "%" + txtBusqueda + "%");
+
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            DataTable tabla = new DataTable();
                             tabla.Load(reader);
-                            DgvBajas.DataSource = tabla;
                         }
                     }
+                    // asignamos la tabla al dataGridView baja
+                    dgv.DataSource = tabla;
                 }
                 catch (Exception ex)
                 {
                     throw new Exception("Error al buscar el usuario: " + ex.Message);
                 }
-            }*/
-        
+            }
         }
 
     }

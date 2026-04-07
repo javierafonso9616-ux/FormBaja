@@ -49,7 +49,12 @@ namespace FormBaja
         //--------------------------------------------------------------
 
         
+        private void TimerBusqueda(int ms) {
 
+
+            
+        
+        }
 
 
 
@@ -65,9 +70,19 @@ namespace FormBaja
         //--------------------------------------------------------------
         private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e)
         {
-          string busqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
+            string busqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
 
-            accesoDatos.BuscarUsuario(busqueda);
+            TimerBusqueda(300);
+
+            try
+            {
+                // Pasamos el DataGridView y el texto a buscar
+                accesoDatos.BuscarUsuario(DgvBajas, busqueda);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
 
