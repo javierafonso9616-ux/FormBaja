@@ -20,7 +20,7 @@ namespace FormBaja
         private Timer timerBusqueda;
         
         // [DEBUG] cronometro
-        // private Stopwatch cronometroCarga;
+         private Stopwatch cronometroCarga;
 
         //--------------------------------------------------------------
         // CREACION DEL FOMULARIO INICIAL
@@ -30,11 +30,12 @@ namespace FormBaja
         public FormPrincipal()
         {
             // [DEBUG] cronometro
-            // cronometroCarga = Stopwatch.StartNew();
+            cronometroCarga = Stopwatch.StartNew();
 
 
             InitializeComponent();
 
+            this.Opacity = 0;
 
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
             
@@ -51,27 +52,43 @@ namespace FormBaja
 
             ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER
 
-            this.WindowState = FormWindowState.Maximized;
+            // CENTRADO DE FORMULARIO PARAA EVITAR QUE TAPE LA BARRA DE WINDOWS Y SE PONGA EN PANTALLA MAXIMIZADA( NO COMPLETA)
+            this.StartPosition = FormStartPosition.Manual;
+            this.Bounds = Screen.PrimaryScreen.WorkingArea;
+            
 
         }
 
         //--------------------------------------------------------------
         // CARGA DEL FORMULARIO DESPUES DE LA CREACION
         //--------------------------------------------------------------
-        private void FormPrincipal_Load(object sender, EventArgs e)
+        private void FormPrincipal_Shown(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
             ConfigurarGrid();
 
+            this.ResumeLayout();
+            this.Opacity = 1;
 
 
 
             //  [DEBUG] cronometro
-            //  cronometroCarga.Stop();
-            //  long milisegundos = cronometroCarga.ElapsedMilliseconds;
-            //  Debug.WriteLine($">>> TIEMPO TOTAL DE CARGA: {milisegundos} ms");
+              cronometroCarga.Stop();
+              long milisegundos = cronometroCarga.ElapsedMilliseconds;
+              Debug.WriteLine($">>> TIEMPO TOTAL DE CARGA: {milisegundos} ms");
         }
 
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000; // WS_EX_COMPOSITED: Dibuja todos los hijos de abajo hacia arriba
+                return cp;
+            }
+        }
         //--------------------------------------------------------------
         // METODOS
         //--------------------------------------------------------------
@@ -175,7 +192,7 @@ namespace FormBaja
             DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243); // AZUL CLARO
             DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter;
+            DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
             // ALTERNADO DE COLORES DE FILAS
             DgvBajas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
@@ -183,7 +200,7 @@ namespace FormBaja
             DgvBajas.DefaultCellStyle.SelectionForeColor = Color.Black;
 
             // ALINEAMIENTO DE TEXTO DE LAS CELDAS
-            DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.NotSet;
+            DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 10);
             DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI EN NEGRITA
 
