@@ -65,7 +65,10 @@ namespace FormBaja.Forms
 
                 MessageBox.Show("Usuario añadido correctamente.");
 
-                this.ActiveControl = TxtDNI;
+                // metodo mega magico que encontre para poder ponerl el %@!# foco en el txt dni porque 
+                // no habia %@!# manera de ponerlo(ni con el focus, select ni activecontrol) por el %@!# materialskin2
+                // que mu bonito pero da problemas
+                this.SelectNextControl(null, true, true, true, false);
 
             }
             // SI FALLA SE MUESTRA EL ERROR Y SE LIMPIAN LOS CAMPOS
@@ -77,7 +80,7 @@ namespace FormBaja.Forms
                 TxtNombre.Clear();
                 TxtApellidos.Clear();
 
-                
+                this.SelectNextControl(null, true, true, true, false);
 
 
             }

@@ -99,7 +99,6 @@
             this.TxtApellidos.ShortcutsEnabled = true;
             this.TxtApellidos.Size = new System.Drawing.Size(250, 48);
             this.TxtApellidos.TabIndex = 2;
-            this.TxtApellidos.TabStop = false;
             this.TxtApellidos.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TxtApellidos.TrailingIcon = null;
             this.TxtApellidos.UseSystemPasswordChar = false;
@@ -128,7 +127,6 @@
             this.TxtNombre.ShortcutsEnabled = true;
             this.TxtNombre.Size = new System.Drawing.Size(250, 48);
             this.TxtNombre.TabIndex = 1;
-            this.TxtNombre.TabStop = false;
             this.TxtNombre.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TxtNombre.TrailingIcon = null;
             this.TxtNombre.UseSystemPasswordChar = false;
