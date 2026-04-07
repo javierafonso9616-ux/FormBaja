@@ -1,15 +1,9 @@
 ﻿using ClosedXML.Excel;
 using FormBaja.Entidades;
-using FormBaja.Forms;
-using Microsoft.IdentityModel.Protocols;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FormBaja.Datos

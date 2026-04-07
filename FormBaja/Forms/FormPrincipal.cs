@@ -3,14 +3,8 @@ using FormBaja.Datos;
 using FormBaja.Forms;
 using MaterialSkin.Controls;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FormBaja
@@ -135,22 +129,21 @@ namespace FormBaja
 
         private void ConfigurarGrid()
         {
-            // 1. Primero convertimos las celdas a desplegables 
+            // CONVERTISMOS LAS CELDAS EN DESPLEGABLES
             ConvertirCeldasEnDesplegables();
 
-            // 2. Ajuste de columnas al contenido
-            // AllCells ajusta el ancho al texto más largo (cabecera o celda)
+            // AJUSTE DE COLUMNAS
             DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             DgvBajas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
            
         
 
-            // 3. Bloquear modificación de alto de celdas
+            // BLOQUEO DE REDIMENSIONAR FILAS
             DgvBajas.AllowUserToResizeRows = false;
             DgvBajas.RowHeadersVisible = false; // Oculta la columna gris de la izquierda para ganar espacio
             
 
-            // 4. Estilo visual y colores
+            // ESTILOS VISUALES Y COLORES
             DgvBajas.BackgroundColor = Color.White;
             DgvBajas.BorderStyle = BorderStyle.None;
             DgvBajas.GridColor = Color.FromArgb(230, 230, 230);
@@ -159,32 +152,27 @@ namespace FormBaja
 
             
 
-            // 5. Configuración de Cabeceras
-            DgvBajas.EnableHeadersVisualStyles = false; // Permite personalizar colores de cabecera
+            // CONFIGURACION DE ESTILOS DE CABECERA
+            DgvBajas.EnableHeadersVisualStyles = false; // DESACTIVAMOS EL ESTILO POR DEFECTO
             DgvBajas.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             DgvBajas.ColumnHeadersHeight = 40;
 
-            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243); // Azul Primario
+            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243); // AZUL CLARO
             DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter;
 
-            // 6. Filas alternas para mejor lectura
+            // ALTERNADO DE COLORES DE FILAS
             DgvBajas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
-            DgvBajas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251); // Azul claro al seleccionar
+            DgvBajas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251); // COLOR AL SELECCIONAR
             DgvBajas.DefaultCellStyle.SelectionForeColor = Color.Black;
 
-            // 7. Alineación del contenido
+            // ALINEAMIENTO DE TEXTO DE LAS CELDAS
             DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.NotSet;
             DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 10);
-            DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI
+            DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI EN NEGRITA
 
-             
-
-
-
-
-                    
+                
         }
 
         //--------------------------------------------------------------
@@ -301,6 +289,10 @@ namespace FormBaja
             Process.Start("https://hospitalcrgijon.com/");
 
         }
+
+
+
+
 
 
         // test
