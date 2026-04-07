@@ -215,7 +215,16 @@ namespace FormBaja
 
         private void BtnExportar_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("prueba");
+            string txtBusqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
+            try
+            {
+                // PASAMOS EL DATAGRIDVIEW AL METODO PARA EXPORTAR
+                accesoDatos.ExportarExcel(DgvBajas, txtBusqueda);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
 

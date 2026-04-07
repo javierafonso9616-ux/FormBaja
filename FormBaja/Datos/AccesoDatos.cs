@@ -1,15 +1,16 @@
-﻿using Microsoft.IdentityModel.Protocols;
+﻿using ClosedXML.Excel;
+using FormBaja.Entidades;
+using FormBaja.Forms;
+using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using FormBaja.Entidades;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using FormBaja.Forms;
 
 namespace FormBaja.Datos
 {
@@ -214,5 +215,47 @@ namespace FormBaja.Datos
             }
         }
 
+        public void ExportarExcel(DataGridView dgv, string txtBusqueda)
+        {
+            // VERIFICA QUE HAY DATOS EN EL DATAGRIDVIEW
+            if (dgv.DataSource == null || !(dgv.DataSource is DataTable dt))
+            {
+                MessageBox.Show("No hay datos disponibles para exportar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // CUADRO DE WINDOW PARA GUARDAR EL ARCHIVO
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Filter = "Excel Workbook|*.xlsx",
+                Title = "Exportar datos a Excel",
+                FileName = "Listado_Bajas_" + txtBusqueda + "_" + DateTime.Now.ToString("yyyyMMddHHmmss")
+            };
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    
+                    using (XLWorkbook wb = new XLWorkbook())
+                    {
+                        // AÑADE UNA HOJA CON LOS DATOS DEL DATAGRIDVIEW
+                        
+                        var ws = wb.Worksheets.Add(dt, "Usuarios");
+
+                        // AJUSTAMOS EL ANCHO DE LAS COLUMNAS
+                        ws.Columns().AdjustToContents();
+
+                        // GUARDADON DEL ARCHIVO
+                        wb.SaveAs(sfd.FileName);
+                        MessageBox.Show("Datos exportados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al generar el Excel: " + ex.Message);
+                }
+            }
+        }
     }
 }
