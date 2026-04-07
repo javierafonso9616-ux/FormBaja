@@ -18,7 +18,9 @@ namespace FormBaja
         //--------------------------------------------------------------
         public readonly AccesoDatos accesoDatos = new AccesoDatos();
         private Timer timerBusqueda;
-
+        
+        // [DEBUG] cronometro
+        // private Stopwatch cronometroCarga;
 
         //--------------------------------------------------------------
         // CREACION DEL FOMULARIO INICIAL
@@ -27,11 +29,15 @@ namespace FormBaja
 
         public FormPrincipal()
         {
+            // [DEBUG] cronometro
+            // cronometroCarga = Stopwatch.StartNew();
+
+
             InitializeComponent();
 
 
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
-            accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
+            
 
             //----------------------------------------------------------------
             //  CODIGO PARA AGILIZAR LA CARGA DEL PROGRAMA
@@ -41,7 +47,7 @@ namespace FormBaja
 
             //----------------------------------------------------------------
 
-            ConfigurarGrid();
+          
 
             ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER
 
@@ -52,10 +58,18 @@ namespace FormBaja
         //--------------------------------------------------------------
         // CARGA DEL FORMULARIO DESPUES DE LA CREACION
         //--------------------------------------------------------------
-        private void FormPrincipal_Shown(object sender, EventArgs e)
+        private void FormPrincipal_Load(object sender, EventArgs e)
         {
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
             ConfigurarGrid();
+
+
+
+
+            //  [DEBUG] cronometro
+            //  cronometroCarga.Stop();
+            //  long milisegundos = cronometroCarga.ElapsedMilliseconds;
+            //  Debug.WriteLine($">>> TIEMPO TOTAL DE CARGA: {milisegundos} ms");
         }
 
         //--------------------------------------------------------------
@@ -135,9 +149,8 @@ namespace FormBaja
             ConvertirCeldasEnDesplegables();
 
             // AJUSTE DE COLUMNAS
-            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            DgvBajas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-           
+            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            
         
 
             // BLOQUEO DE REDIMENSIONAR FILAS

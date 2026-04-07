@@ -224,7 +224,7 @@
             this.Name = "FormPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Baja de servicios";
-            this.Shown += new System.EventHandler(this.FormPrincipal_Shown);
+            this.Shown += new System.EventHandler(this.FormPrincipal_Load);
             this.materialCardBajaSuperior.ResumeLayout(false);
             this.materialCardBajaSuperior.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
