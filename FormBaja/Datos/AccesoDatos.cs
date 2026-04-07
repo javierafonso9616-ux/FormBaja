@@ -154,9 +154,11 @@ namespace FormBaja.Datos
         // BUSCAR USUARIO POR DNI O NOMBRE
 
         public void BuscarUsuario(string txtBusqueda) {  
+
+           Console.WriteLine("buscando: " + txtBusqueda);
         
             string consulta = $"SELECT * FROM Usuarios WHERE DNI LIKE '%{txtBusqueda}%' OR NOMBRE LIKE '%{txtBusqueda}%'";
-
+            /*
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))
             {
                 try
@@ -176,7 +178,7 @@ namespace FormBaja.Datos
                 {
                     throw new Exception("Error al buscar el usuario: " + ex.Message);
                 }
-            }
+            }*/
         
         }
 
