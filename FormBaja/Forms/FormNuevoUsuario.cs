@@ -55,11 +55,11 @@ namespace FormBaja.Forms
                 TxtNombre.Clear();
                 TxtApellidos.Clear();
 
-             
 
-                // metodo mega magico que encontre para poder ponerl el %@!# foco en el txt dni porque 
-                // no habia %@!# manera de ponerlo(ni con el focus, select ni activecontrol) por el %@!# materialskin2
-                // que mu bonito pero da problemas
+
+                // METODO MEGA MAGICO QUE ENCONTRE PARA PODER PONERL EL %@!# FOCO EN EL TXT DNI PORQUE 
+                // NO HABIA %@!# MANERA DE PONERLO(NI CON EL FOCUS, SELECT NI ACTIVECONTROL) POR EL %@!# MATERIALSKIN2
+                // QUE MU BONITO PERO DA PROBLEMAS
                 this.SelectNextControl(null, true, true, true, false);
 
             }

@@ -42,7 +42,8 @@ namespace FormBaja.Datos
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            // Esto carga automáticamente TODAS las columnas existentes de forma dinámica
+                            // CARGAMOS LOS DATOS EN LA TABLA
+
                             tabla.Load(reader);
                         }
                     }
@@ -160,7 +161,7 @@ namespace FormBaja.Datos
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
-                        // Si el valor es vacío, guardamos NULL en la base de datos
+                        // SI ES VACIO LO GUARDAMOS COMO NULL
                         cmd.Parameters.AddWithValue("@valor", string.IsNullOrEmpty(valor) ? (object)DBNull.Value : valor);
                         cmd.Parameters.AddWithValue("@dni", dni);
 
@@ -189,9 +190,8 @@ namespace FormBaja.Datos
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
-                        // creamos el parametro de la busqueda y le pasamos el txtBusqueda,
-                        // el % es para que busque en cualquier parte de la cadena de texto en lugar de solo al principio
-                        // o exactamente lo que hayas escrito.
+                        // CONCATENAMOS CON % PARA QUE BUSQUE EN CUALQUIER PARTE
+                        
                         cmd.Parameters.AddWithValue("@busqueda", "%" + txtBusqueda + "%");
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -199,7 +199,7 @@ namespace FormBaja.Datos
                             tabla.Load(reader);
                         }
                     }
-                    // asignamos la tabla al dataGridView baja
+                    // ASIGNAMOS LA TABLA AL GRID
                     dgv.DataSource = tabla;
                 }
                 catch (Exception ex)

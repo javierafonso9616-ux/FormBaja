@@ -33,6 +33,14 @@ namespace FormBaja
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
 
+            //----------------------------------------------------------------
+            //  CODIGO PARA AGILIZAR LA CARGA DEL PROGRAMA
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
+                    null, DgvBajas, new object[] { true });
+
+            //----------------------------------------------------------------
+
             ConfigurarGrid();
 
             ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER
@@ -44,12 +52,10 @@ namespace FormBaja
         //--------------------------------------------------------------
         // CARGA DEL FORMULARIO DESPUES DE LA CREACION
         //--------------------------------------------------------------
-        private void FormBaja_Load(object sender, EventArgs e)
+        private void FormPrincipal_Shown(object sender, EventArgs e)
         {
-            
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
             ConfigurarGrid();
-
         }
 
         //--------------------------------------------------------------
@@ -88,35 +94,29 @@ namespace FormBaja
             {
                 string nombreColumna = DgvBajas.Columns[i].Name;
 
-                // Creamos la columna de tipo desplegable
+                // CREAMOS LA NUEVA COLUMNA CON EL NOMBRE DEL PROGRAMA Y LOS ESTILOS
                 DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn
                 {
                     Name = nombreColumna,
                     HeaderText = nombreColumna,
-                    DataPropertyName = nombreColumna // Importante para que se enlace al DataTable
+                    DataPropertyName = nombreColumna, 
+                    FlatStyle = FlatStyle.Flat,                   
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox,
                 };
 
-                // --- MEJORAS ESTÉTICAS ---
-                // 1. Estilo Plano 
-                comboCol.FlatStyle = FlatStyle.Flat;
-
-                // 2. Controlar cuándo se ve la flecha (ComboBox para que se vea siempre)
-                comboCol.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
-
-                // 3. Colores de la celda para que peguen con tu Grid
+                // COLORES DE LAS CELDAS DESPLEGABLE
                 comboCol.DefaultCellStyle.BackColor = Color.White;
                 comboCol.DefaultCellStyle.ForeColor = Color.Black;
-                // Color cuando está seleccionada 
                 comboCol.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
 
 
-                // Añadimos las opciones 
+                // OPCIONES DEL DESPLEGABLE
                 comboCol.Items.Add("");
                 comboCol.Items.Add("ACTIVO");
                 comboCol.Items.Add("INACTIVO");
                                     
 
-                // Intercambiamos la columna de texto por la de combo
+                // REEMPLAZAMOS LA COLUMNA POR LA NUEVA CON DESPLEGABLE
                 DgvBajas.Columns.RemoveAt(i);
                 DgvBajas.Columns.Insert(i, comboCol);
             }
@@ -129,6 +129,8 @@ namespace FormBaja
 
         private void ConfigurarGrid()
         {
+            DgvBajas.SuspendLayout();// PARTE DEL AGILIZAMIENTO DEL PROGRAMA
+
             // CONVERTISMOS LAS CELDAS EN DESPLEGABLES
             ConvertirCeldasEnDesplegables();
 
@@ -140,14 +142,14 @@ namespace FormBaja
 
             // BLOQUEO DE REDIMENSIONAR FILAS
             DgvBajas.AllowUserToResizeRows = false;
-            DgvBajas.RowHeadersVisible = false; // Oculta la columna gris de la izquierda para ganar espacio
+            DgvBajas.RowHeadersVisible = false; // OCULTAMOS EL ENCABEZADO IZQUIERDO
             
 
             // ESTILOS VISUALES Y COLORES
             DgvBajas.BackgroundColor = Color.White;
             DgvBajas.BorderStyle = BorderStyle.None;
             DgvBajas.GridColor = Color.FromArgb(230, 230, 230);
-            DgvBajas.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // Selecciona fila completa
+            DgvBajas.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // SELECCION DE FILA COMPLETA
             DgvBajas.MultiSelect = false;
 
             
@@ -172,7 +174,7 @@ namespace FormBaja
             DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 10);
             DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI EN NEGRITA
 
-                
+            DgvBajas.ResumeLayout(); // PARTE DEL AGILIZAMIENTO DEL PROGRAMA
         }
 
         //--------------------------------------------------------------
@@ -235,7 +237,10 @@ namespace FormBaja
 
         private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e)
         {
-            // Cada vez que el texto cambia, paramos y volvemos a arrancar el timer
+            
+            // CADA VEZ QUE EL TEXTO CAMBIA, PARAMOS Y INICIAMOS EL TIMER
+            // PARA QUE NO SE EJECUTE VARIAS VECES SEGUIDAS
+           
             timerBusqueda.Stop();
             timerBusqueda.Start();
         }

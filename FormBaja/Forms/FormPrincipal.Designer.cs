@@ -223,8 +223,8 @@
             this.Controls.Add(this.materialCardBajaSuperior);
             this.Name = "FormPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Baja";
-            this.Load += new System.EventHandler(this.FormBaja_Load);
+            this.Text = "Baja de servicios";
+            this.Shown += new System.EventHandler(this.FormPrincipal_Shown);
             this.materialCardBajaSuperior.ResumeLayout(false);
             this.materialCardBajaSuperior.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
