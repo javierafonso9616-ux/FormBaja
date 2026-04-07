@@ -15,7 +15,7 @@ namespace FormBaja.Entidades
         public string Apellidos { get; set; }
 
         // lista de programas
-        public Dictionary<string, string> Programas { get; set; } = new Dictionary<string, string>();
+        // public Dictionary<string, string> Programas { get; set; } = new Dictionary<string, string>();
 
 
 

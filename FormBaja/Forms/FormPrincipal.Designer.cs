@@ -35,6 +35,7 @@
             this.TxtBuscarDNIoNombre = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialCardBajaInferior = new MaterialSkin.Controls.MaterialCard();
             this.DgvBajas = new System.Windows.Forms.DataGridView();
+            this.materialButton1 = new MaterialSkin.Controls.MaterialButton();
             this.materialCardBajaSuperior.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.materialCardBajaInferior.SuspendLayout();
@@ -44,6 +45,7 @@
             // materialCardBajaSuperior
             // 
             this.materialCardBajaSuperior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.materialCardBajaSuperior.Controls.Add(this.materialButton1);
             this.materialCardBajaSuperior.Controls.Add(this.pictureBox1);
             this.materialCardBajaSuperior.Controls.Add(this.BtnNuevoPrograma);
             this.materialCardBajaSuperior.Controls.Add(this.BtnNuevoUsuario);
@@ -167,6 +169,26 @@
             this.DgvBajas.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellValueChanged);
             this.DgvBajas.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvBajas_CurrentCellDirtyStateChanged);
             // 
+            // materialButton1
+            // 
+            this.materialButton1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.materialButton1.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.materialButton1.Depth = 0;
+            this.materialButton1.HighEmphasis = true;
+            this.materialButton1.Icon = null;
+            this.materialButton1.Location = new System.Drawing.Point(500, 120);
+            this.materialButton1.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.materialButton1.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialButton1.Name = "materialButton1";
+            this.materialButton1.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.materialButton1.Size = new System.Drawing.Size(158, 36);
+            this.materialButton1.TabIndex = 4;
+            this.materialButton1.Text = "materialButton1";
+            this.materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.materialButton1.UseAccentColor = false;
+            this.materialButton1.UseVisualStyleBackColor = true;
+            this.materialButton1.Click += new System.EventHandler(this.MaterialButton1_Click);
+            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -196,6 +218,7 @@
         private MaterialSkin.Controls.MaterialButton BtnNuevoUsuario;
         private System.Windows.Forms.DataGridView DgvBajas;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private MaterialSkin.Controls.MaterialButton materialButton1;
     }
 }
 

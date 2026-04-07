@@ -152,9 +152,10 @@ namespace FormBaja.Datos
         }
 
         // INSERTAR DATOS
-        public void InsertarDatos(string dni, string nombreColumna, string valor)
+        public void ActualizarDatosProgramas(string dni, string nombreColumna, string valor)
         {
-            // Usamos corchetes [] por si el nombre del programa tiene espacios o caracteres especiales
+            // USAMOS [] PARA QUE EL NOMBRE DE LA COLUMNA SEA DINÁMICO Y
+            // ACEPTE CUALQUIER NOMBRE CON ESPACIOS O CARÁCTERES ESPECIALES
             string consulta = $"UPDATE Usuarios SET [{nombreColumna}] = @valor WHERE DNI = @dni";
 
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))

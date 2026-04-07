@@ -37,8 +37,7 @@ namespace FormBaja
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
 
             // CONFIGURACION DEL TIMER
-            timerBusqueda = new Timer();
-            timerBusqueda.Interval = 500; // medio segundo
+            timerBusqueda = new Timer{ Interval = 500 };// medio segundo
             timerBusqueda.Tick += BusquedaDelay;
 
             this.WindowState = FormWindowState.Maximized;
@@ -86,10 +85,12 @@ namespace FormBaja
                 string nombreColumna = DgvBajas.Columns[i].Name;
 
                 // Creamos la columna de tipo desplegable
-                DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn();
-                comboCol.Name = nombreColumna;
-                comboCol.HeaderText = nombreColumna;
-                comboCol.DataPropertyName = nombreColumna; // Importante para que se enlace al DataTable
+                DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn
+                {
+                    Name = nombreColumna,
+                    HeaderText = nombreColumna,
+                    DataPropertyName = nombreColumna // Importante para que se enlace al DataTable
+                };
 
                 // Añadimos las opciones que mencionaste
                 comboCol.Items.Add("");
@@ -156,7 +157,7 @@ namespace FormBaja
                     string nuevoValor = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
 
                     // LLAMAMOS AL METODO PARA INSERTAR LOS DATOS NUEVOS
-                    accesoDatos.InsertarDatos(dni, programa, nuevoValor);
+                    accesoDatos.ActualizarDatosProgramas(dni, programa, nuevoValor);
                   
                 }
                 catch (Exception ex)
@@ -201,6 +202,9 @@ namespace FormBaja
             accesoDatos.CargarDatos(DgvBajas);
         }
 
-       
+        private void MaterialButton1_Click(object sender, EventArgs e)
+        {
+            accesoDatos.CargarDatos(DgvBajas);
+        }
     }
 }
