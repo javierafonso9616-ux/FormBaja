@@ -16,22 +16,32 @@ namespace FormBaja
 {
     public partial class FormPrincipal : MaterialForm
     {
+        
+       
         //--------------------------------------------------------------
-        // ACCESO A DATOS
+        // ATRIBUTOS
         //--------------------------------------------------------------
         public readonly AccesoDatos accesoDatos = new AccesoDatos();
+        private readonly Timer timerBusqueda;
 
-        
 
         //--------------------------------------------------------------
         // CREACION DEL FOMULARIO INICIAL
         //--------------------------------------------------------------
+
+
         public FormPrincipal()
         {
             InitializeComponent();
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
 
+            // CONFIGURACION DEL TIMER
+            timerBusqueda = new Timer();
+            timerBusqueda.Interval = 500; // medio segundo
+            timerBusqueda.Tick += BusquedaDelay;
+
+            this.WindowState = FormWindowState.Maximized;
         }
 
         //--------------------------------------------------------------
@@ -39,21 +49,33 @@ namespace FormBaja
         //--------------------------------------------------------------
         private void FormBaja_Load(object sender, EventArgs e)
         {
+            ConfigurarGrid();
 
-            
-            
+
+
         }
 
         //--------------------------------------------------------------
         // METODOS
         //--------------------------------------------------------------
 
-        
-        private void TimerBusqueda(int ms) {
 
+        private void BusquedaDelay(object sender, EventArgs e)
+        {
+            // se para el timer para evitar que se ejecute varias veces
+            timerBusqueda.Stop();
 
-            
-        
+            string busqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
+
+            try
+            {
+                // ejecutamos la búsqueda en la base de datos
+                accesoDatos.BuscarUsuario(DgvBajas, busqueda);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en la búsqueda: " + ex.Message);
+            }
         }
 
 
@@ -68,22 +90,16 @@ namespace FormBaja
         //--------------------------------------------------------------
         // TEXTBOX
         //--------------------------------------------------------------
+       
         private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e)
         {
-            string busqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
-
-            TimerBusqueda(300);
-
-            try
-            {
-                // Pasamos el DataGridView y el texto a buscar
-                accesoDatos.BuscarUsuario(DgvBajas, busqueda);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            // Cada vez que el texto cambia, paramos y volvemos a arrancar el timer
+            timerBusqueda.Stop();
+            timerBusqueda.Start();
         }
+
+        
+        
 
 
         //--------------------------------------------------------------

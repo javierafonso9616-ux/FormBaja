@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.materialCardNuevoUsuario = new MaterialSkin.Controls.MaterialCard();
-            this.TxtDNI = new MaterialSkin.Controls.MaterialTextBox2();
-            this.TxtNombre = new MaterialSkin.Controls.MaterialTextBox2();
-            this.TxtApellidos = new MaterialSkin.Controls.MaterialTextBox2();
             this.BtnGuardarUsuario = new MaterialSkin.Controls.MaterialButton();
+            this.TxtApellidos = new MaterialSkin.Controls.MaterialTextBox2();
+            this.TxtNombre = new MaterialSkin.Controls.MaterialTextBox2();
+            this.TxtDNI = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialCardNuevoUsuario.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,63 +54,26 @@
             this.materialCardNuevoUsuario.Size = new System.Drawing.Size(794, 383);
             this.materialCardNuevoUsuario.TabIndex = 0;
             // 
-            // TxtDNI
+            // BtnGuardarUsuario
             // 
-            this.TxtDNI.AnimateReadOnly = false;
-            this.TxtDNI.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.TxtDNI.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.TxtDNI.Depth = 0;
-            this.TxtDNI.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.TxtDNI.HideSelection = true;
-            this.TxtDNI.Hint = "DNI";
-            this.TxtDNI.LeadingIcon = null;
-            this.TxtDNI.Location = new System.Drawing.Point(272, 79);
-            this.TxtDNI.MaxLength = 32767;
-            this.TxtDNI.MouseState = MaterialSkin.MouseState.OUT;
-            this.TxtDNI.Name = "TxtDNI";
-            this.TxtDNI.PasswordChar = '\0';
-            this.TxtDNI.PrefixSuffixText = null;
-            this.TxtDNI.ReadOnly = false;
-            this.TxtDNI.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TxtDNI.SelectedText = "";
-            this.TxtDNI.SelectionLength = 0;
-            this.TxtDNI.SelectionStart = 0;
-            this.TxtDNI.ShortcutsEnabled = true;
-            this.TxtDNI.Size = new System.Drawing.Size(250, 48);
-            this.TxtDNI.TabIndex = 0;
-            this.TxtDNI.TabStop = false;
-            this.TxtDNI.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.TxtDNI.TrailingIcon = null;
-            this.TxtDNI.UseSystemPasswordChar = false;
-            // 
-            // TxtNombre
-            // 
-            this.TxtNombre.AnimateReadOnly = false;
-            this.TxtNombre.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.TxtNombre.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.TxtNombre.Depth = 0;
-            this.TxtNombre.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.TxtNombre.HideSelection = true;
-            this.TxtNombre.Hint = "Nombre";
-            this.TxtNombre.LeadingIcon = null;
-            this.TxtNombre.Location = new System.Drawing.Point(272, 169);
-            this.TxtNombre.MaxLength = 32767;
-            this.TxtNombre.MouseState = MaterialSkin.MouseState.OUT;
-            this.TxtNombre.Name = "TxtNombre";
-            this.TxtNombre.PasswordChar = '\0';
-            this.TxtNombre.PrefixSuffixText = null;
-            this.TxtNombre.ReadOnly = false;
-            this.TxtNombre.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TxtNombre.SelectedText = "";
-            this.TxtNombre.SelectionLength = 0;
-            this.TxtNombre.SelectionStart = 0;
-            this.TxtNombre.ShortcutsEnabled = true;
-            this.TxtNombre.Size = new System.Drawing.Size(250, 48);
-            this.TxtNombre.TabIndex = 1;
-            this.TxtNombre.TabStop = false;
-            this.TxtNombre.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.TxtNombre.TrailingIcon = null;
-            this.TxtNombre.UseSystemPasswordChar = false;
+            this.BtnGuardarUsuario.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BtnGuardarUsuario.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.BtnGuardarUsuario.Depth = 0;
+            this.BtnGuardarUsuario.HighEmphasis = true;
+            this.BtnGuardarUsuario.Icon = null;
+            this.BtnGuardarUsuario.Location = new System.Drawing.Point(618, 327);
+            this.BtnGuardarUsuario.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.BtnGuardarUsuario.MouseState = MaterialSkin.MouseState.HOVER;
+            this.BtnGuardarUsuario.Name = "BtnGuardarUsuario";
+            this.BtnGuardarUsuario.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.BtnGuardarUsuario.Size = new System.Drawing.Size(153, 36);
+            this.BtnGuardarUsuario.TabIndex = 3;
+            this.BtnGuardarUsuario.TabStop = false;
+            this.BtnGuardarUsuario.Text = "Guardar Usuario";
+            this.BtnGuardarUsuario.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.BtnGuardarUsuario.UseAccentColor = false;
+            this.BtnGuardarUsuario.UseVisualStyleBackColor = true;
+            this.BtnGuardarUsuario.Click += new System.EventHandler(this.BtnGuardarUsuario_Click);
             // 
             // TxtApellidos
             // 
@@ -118,7 +81,7 @@
             this.TxtApellidos.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TxtApellidos.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.TxtApellidos.Depth = 0;
-            this.TxtApellidos.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.TxtApellidos.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.TxtApellidos.HideSelection = true;
             this.TxtApellidos.Hint = "Apellidos";
             this.TxtApellidos.LeadingIcon = null;
@@ -141,25 +104,62 @@
             this.TxtApellidos.TrailingIcon = null;
             this.TxtApellidos.UseSystemPasswordChar = false;
             // 
-            // BtnGuardarUsuario
+            // TxtNombre
             // 
-            this.BtnGuardarUsuario.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BtnGuardarUsuario.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.BtnGuardarUsuario.Depth = 0;
-            this.BtnGuardarUsuario.HighEmphasis = true;
-            this.BtnGuardarUsuario.Icon = null;
-            this.BtnGuardarUsuario.Location = new System.Drawing.Point(618, 327);
-            this.BtnGuardarUsuario.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.BtnGuardarUsuario.MouseState = MaterialSkin.MouseState.HOVER;
-            this.BtnGuardarUsuario.Name = "BtnGuardarUsuario";
-            this.BtnGuardarUsuario.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.BtnGuardarUsuario.Size = new System.Drawing.Size(153, 36);
-            this.BtnGuardarUsuario.TabIndex = 3;
-            this.BtnGuardarUsuario.Text = "Guardar Usuario";
-            this.BtnGuardarUsuario.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.BtnGuardarUsuario.UseAccentColor = false;
-            this.BtnGuardarUsuario.UseVisualStyleBackColor = true;
-            this.BtnGuardarUsuario.Click += new System.EventHandler(this.BtnGuardarUsuario_Click);
+            this.TxtNombre.AnimateReadOnly = false;
+            this.TxtNombre.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.TxtNombre.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.TxtNombre.Depth = 0;
+            this.TxtNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.TxtNombre.HideSelection = true;
+            this.TxtNombre.Hint = "Nombre";
+            this.TxtNombre.LeadingIcon = null;
+            this.TxtNombre.Location = new System.Drawing.Point(272, 169);
+            this.TxtNombre.MaxLength = 32767;
+            this.TxtNombre.MouseState = MaterialSkin.MouseState.OUT;
+            this.TxtNombre.Name = "TxtNombre";
+            this.TxtNombre.PasswordChar = '\0';
+            this.TxtNombre.PrefixSuffixText = null;
+            this.TxtNombre.ReadOnly = false;
+            this.TxtNombre.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.TxtNombre.SelectedText = "";
+            this.TxtNombre.SelectionLength = 0;
+            this.TxtNombre.SelectionStart = 0;
+            this.TxtNombre.ShortcutsEnabled = true;
+            this.TxtNombre.Size = new System.Drawing.Size(250, 48);
+            this.TxtNombre.TabIndex = 1;
+            this.TxtNombre.TabStop = false;
+            this.TxtNombre.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.TxtNombre.TrailingIcon = null;
+            this.TxtNombre.UseSystemPasswordChar = false;
+            // 
+            // TxtDNI
+            // 
+            this.TxtDNI.AnimateReadOnly = false;
+            this.TxtDNI.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.TxtDNI.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.TxtDNI.Depth = 0;
+            this.TxtDNI.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.TxtDNI.HideSelection = true;
+            this.TxtDNI.Hint = "DNI";
+            this.TxtDNI.LeadingIcon = null;
+            this.TxtDNI.Location = new System.Drawing.Point(272, 79);
+            this.TxtDNI.MaxLength = 32767;
+            this.TxtDNI.MouseState = MaterialSkin.MouseState.OUT;
+            this.TxtDNI.Name = "TxtDNI";
+            this.TxtDNI.PasswordChar = '\0';
+            this.TxtDNI.PrefixSuffixText = null;
+            this.TxtDNI.ReadOnly = false;
+            this.TxtDNI.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.TxtDNI.SelectedText = "";
+            this.TxtDNI.SelectionLength = 0;
+            this.TxtDNI.SelectionStart = 0;
+            this.TxtDNI.ShortcutsEnabled = true;
+            this.TxtDNI.Size = new System.Drawing.Size(250, 48);
+            this.TxtDNI.TabIndex = 0;
+            this.TxtDNI.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.TxtDNI.TrailingIcon = null;
+            this.TxtDNI.UseSystemPasswordChar = false;
             // 
             // FormNuevoUsuario
             // 

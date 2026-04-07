@@ -88,7 +88,7 @@ namespace FormBaja.Datos
 
                         cmd.ExecuteNonQuery();
 
-                        MessageBox.Show("Usuario añadido correctamente.");
+                        
                         
                     }
                 }

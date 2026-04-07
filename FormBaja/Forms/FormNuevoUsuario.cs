@@ -33,7 +33,8 @@ namespace FormBaja.Forms
             InitializeComponent();
             GestorTema.ConfigurarMaterialSkin(this);
 
-          
+
+            
         }
 
         //--------------------------------------------------------------
@@ -54,10 +55,18 @@ namespace FormBaja.Forms
             
             try
                 // LLAMAMOS A LA FUNCION QUE INSERTA EL USUARIO
-                // MOSTRAMOS CONFIRMACION Y CERRAMOS EL FORMULARIO
+                
             {
                 accesoDatos.InsertarUsuario(usuarioAGuardar);
-               
+
+                TxtDNI.Clear();
+                TxtNombre.Clear();
+                TxtApellidos.Clear();
+
+                MessageBox.Show("Usuario añadido correctamente.");
+
+                this.ActiveControl = TxtDNI;
+
             }
             // SI FALLA SE MUESTRA EL ERROR Y SE LIMPIAN LOS CAMPOS
             catch (Exception ex)
@@ -67,6 +76,10 @@ namespace FormBaja.Forms
                 TxtDNI.Clear();
                 TxtNombre.Clear();
                 TxtApellidos.Clear();
+
+                
+
+
             }
 
             
