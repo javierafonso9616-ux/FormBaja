@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,8 @@ namespace FormBaja
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
 
-            
+            ConfigurarGrid();
+
             ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER
 
             this.WindowState = FormWindowState.Maximized;
@@ -50,9 +52,9 @@ namespace FormBaja
         //--------------------------------------------------------------
         private void FormBaja_Load(object sender, EventArgs e)
         {
-            ConfigurarGrid();
+            
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
-
+            ConfigurarGrid();
 
         }
 
@@ -100,17 +102,32 @@ namespace FormBaja
                     DataPropertyName = nombreColumna // Importante para que se enlace al DataTable
                 };
 
-                // Añadimos las opciones que mencionaste
+                // --- MEJORAS ESTÉTICAS ---
+                // 1. Estilo Plano 
+                comboCol.FlatStyle = FlatStyle.Flat;
+
+                // 2. Controlar cuándo se ve la flecha (ComboBox para que se vea siempre)
+                comboCol.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
+
+                // 3. Colores de la celda para que peguen con tu Grid
+                comboCol.DefaultCellStyle.BackColor = Color.White;
+                comboCol.DefaultCellStyle.ForeColor = Color.Black;
+                // Color cuando está seleccionada 
+                comboCol.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
+
+
+                // Añadimos las opciones 
                 comboCol.Items.Add("");
-                comboCol.Items.Add("ACTIVADO");
-                comboCol.Items.Add("DESACTIVADO");
+                comboCol.Items.Add("ACTIVO");
+                comboCol.Items.Add("INACTIVO");
+                                    
 
                 // Intercambiamos la columna de texto por la de combo
                 DgvBajas.Columns.RemoveAt(i);
                 DgvBajas.Columns.Insert(i, comboCol);
             }
         }
-        
+
 
         //--------------------------------------------------------------
         // CONFIGURAR EL GRID
@@ -118,7 +135,56 @@ namespace FormBaja
 
         private void ConfigurarGrid()
         {
+            // 1. Primero convertimos las celdas a desplegables 
             ConvertirCeldasEnDesplegables();
+
+            // 2. Ajuste de columnas al contenido
+            // AllCells ajusta el ancho al texto más largo (cabecera o celda)
+            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            DgvBajas.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+           
+        
+
+            // 3. Bloquear modificación de alto de celdas
+            DgvBajas.AllowUserToResizeRows = false;
+            DgvBajas.RowHeadersVisible = false; // Oculta la columna gris de la izquierda para ganar espacio
+            
+
+            // 4. Estilo visual y colores
+            DgvBajas.BackgroundColor = Color.White;
+            DgvBajas.BorderStyle = BorderStyle.None;
+            DgvBajas.GridColor = Color.FromArgb(230, 230, 230);
+            DgvBajas.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // Selecciona fila completa
+            DgvBajas.MultiSelect = false;
+
+            
+
+            // 5. Configuración de Cabeceras
+            DgvBajas.EnableHeadersVisualStyles = false; // Permite personalizar colores de cabecera
+            DgvBajas.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            DgvBajas.ColumnHeadersHeight = 40;
+
+            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243); // Azul Primario
+            DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter;
+
+            // 6. Filas alternas para mejor lectura
+            DgvBajas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            DgvBajas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251); // Azul claro al seleccionar
+            DgvBajas.DefaultCellStyle.SelectionForeColor = Color.Black;
+
+            // 7. Alineación del contenido
+            DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.NotSet;
+            DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 10);
+            DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI
+
+             
+
+
+
+
+                    
         }
 
         //--------------------------------------------------------------
@@ -198,6 +264,7 @@ namespace FormBaja
             formNuevoUsuario.ShowDialog();
 
             accesoDatos.CargarDatos(DgvBajas);
+            ConfigurarGrid();
 
         }
 
@@ -210,7 +277,8 @@ namespace FormBaja
             // Y LUEGO LLAMAMOS AL METODO QUE CARGA LOS DATOS
             
             accesoDatos.CargarDatos(DgvBajas);
-            ConvertirCeldasEnDesplegables();
+            ConfigurarGrid();
+            
         }
 
         private void BtnExportar_Click(object sender, EventArgs e)
@@ -228,11 +296,18 @@ namespace FormBaja
         }
 
 
+        private void PictureBox1_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://hospitalcrgijon.com/");
+
+        }
+
 
         // test
         private void MaterialButton1_Click(object sender, EventArgs e)
         {
             accesoDatos.CargarDatos(DgvBajas);
+            ConfigurarGrid();
         }
 
         

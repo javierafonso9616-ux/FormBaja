@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.materialCardBajaSuperior = new MaterialSkin.Controls.MaterialCard();
+            this.BtnExportar = new MaterialSkin.Controls.MaterialButton();
             this.materialButton1 = new MaterialSkin.Controls.MaterialButton();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.BtnNuevoPrograma = new MaterialSkin.Controls.MaterialButton();
@@ -36,7 +37,6 @@
             this.TxtBuscarDNIoNombre = new MaterialSkin.Controls.MaterialTextBox2();
             this.materialCardBajaInferior = new MaterialSkin.Controls.MaterialCard();
             this.DgvBajas = new System.Windows.Forms.DataGridView();
-            this.BtnExportar = new MaterialSkin.Controls.MaterialButton();
             this.materialCardBajaSuperior.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.materialCardBajaInferior.SuspendLayout();
@@ -62,6 +62,27 @@
             this.materialCardBajaSuperior.Padding = new System.Windows.Forms.Padding(14);
             this.materialCardBajaSuperior.Size = new System.Drawing.Size(1914, 173);
             this.materialCardBajaSuperior.TabIndex = 0;
+            // 
+            // BtnExportar
+            // 
+            this.BtnExportar.AutoSize = false;
+            this.BtnExportar.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BtnExportar.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.BtnExportar.Depth = 0;
+            this.BtnExportar.HighEmphasis = true;
+            this.BtnExportar.Icon = null;
+            this.BtnExportar.Location = new System.Drawing.Point(1455, 44);
+            this.BtnExportar.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.BtnExportar.MouseState = MaterialSkin.MouseState.HOVER;
+            this.BtnExportar.Name = "BtnExportar";
+            this.BtnExportar.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.BtnExportar.Size = new System.Drawing.Size(158, 36);
+            this.BtnExportar.TabIndex = 5;
+            this.BtnExportar.Text = "Exportar";
+            this.BtnExportar.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.BtnExportar.UseAccentColor = false;
+            this.BtnExportar.UseVisualStyleBackColor = true;
+            this.BtnExportar.Click += new System.EventHandler(this.BtnExportar_Click);
             // 
             // materialButton1
             // 
@@ -92,6 +113,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.PictureBox1_Click);
             // 
             // BtnNuevoPrograma
             // 
@@ -191,27 +213,6 @@
             this.DgvBajas.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellEnter);
             this.DgvBajas.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellValueChanged);
             this.DgvBajas.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvBajas_CurrentCellDirtyStateChanged);
-            // 
-            // BtnExportar
-            // 
-            this.BtnExportar.AutoSize = false;
-            this.BtnExportar.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BtnExportar.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.BtnExportar.Depth = 0;
-            this.BtnExportar.HighEmphasis = true;
-            this.BtnExportar.Icon = null;
-            this.BtnExportar.Location = new System.Drawing.Point(1455, 44);
-            this.BtnExportar.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.BtnExportar.MouseState = MaterialSkin.MouseState.HOVER;
-            this.BtnExportar.Name = "BtnExportar";
-            this.BtnExportar.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.BtnExportar.Size = new System.Drawing.Size(158, 36);
-            this.BtnExportar.TabIndex = 5;
-            this.BtnExportar.Text = "Exportar";
-            this.BtnExportar.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.BtnExportar.UseAccentColor = false;
-            this.BtnExportar.UseVisualStyleBackColor = true;
-            this.BtnExportar.Click += new System.EventHandler(this.BtnExportar_Click);
             // 
             // FormPrincipal
             // 

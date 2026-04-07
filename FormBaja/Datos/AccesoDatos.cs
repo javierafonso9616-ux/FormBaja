@@ -42,7 +42,7 @@ namespace FormBaja.Datos
                 try
                 {
                     conexion.Open();
-                    string consulta = "SELECT * FROM Usuarios"; 
+                    string consulta = "SELECT * FROM Usuarios ORDER BY NOMBRE ASC";
 
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
@@ -215,6 +215,7 @@ namespace FormBaja.Datos
             }
         }
 
+        // EXPORTAR A EXCEL
         public void ExportarExcel(DataGridView dgv, string txtBusqueda)
         {
             // VERIFICA QUE HAY DATOS EN EL DATAGRIDVIEW
@@ -257,5 +258,6 @@ namespace FormBaja.Datos
                 }
             }
         }
+
     }
 }
