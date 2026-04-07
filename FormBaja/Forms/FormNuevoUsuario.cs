@@ -63,7 +63,7 @@ namespace FormBaja.Forms
                 TxtNombre.Clear();
                 TxtApellidos.Clear();
 
-                MessageBox.Show("Usuario añadido correctamente.");
+             
 
                 // metodo mega magico que encontre para poder ponerl el %@!# foco en el txt dni porque 
                 // no habia %@!# manera de ponerlo(ni con el focus, select ni activecontrol) por el %@!# materialskin2
