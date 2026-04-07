@@ -22,7 +22,7 @@ namespace FormBaja
         // ATRIBUTOS
         //--------------------------------------------------------------
         public readonly AccesoDatos accesoDatos = new AccesoDatos();
-        private readonly Timer timerBusqueda;
+        private Timer timerBusqueda;
 
 
         //--------------------------------------------------------------
@@ -33,14 +33,16 @@ namespace FormBaja
         public FormPrincipal()
         {
             InitializeComponent();
+
+
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
 
-            // CONFIGURACION DEL TIMER
-            timerBusqueda = new Timer{ Interval = 500 };// medio segundo
-            timerBusqueda.Tick += BusquedaDelay;
+            
+            ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER
 
             this.WindowState = FormWindowState.Maximized;
+
         }
 
         //--------------------------------------------------------------
@@ -58,6 +60,12 @@ namespace FormBaja
         // METODOS
         //--------------------------------------------------------------
 
+        private void ConfigurarTimerBusqueda()
+        {
+            
+            timerBusqueda = new Timer { Interval = 500 };
+            timerBusqueda.Tick += BusquedaDelay;
+        }
 
         private void BusquedaDelay(object sender, EventArgs e)
         {
@@ -94,6 +102,7 @@ namespace FormBaja
 
                 // Añadimos las opciones que mencionaste
                 comboCol.Items.Add("");
+                comboCol.Items.Add("ACTIVADO");
                 comboCol.Items.Add("DESACTIVADO");
 
                 // Intercambiamos la columna de texto por la de combo
@@ -136,7 +145,6 @@ namespace FormBaja
         }
 
         // EVENTO QUE MANDA LOS DATOS A LA BASE DE DATOS
-        
         private void DgvBajas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             // EVITAR QUE SE EJECUTE EN EL ENCABEZADO
@@ -168,7 +176,7 @@ namespace FormBaja
         }
 
         //--------------------------------------------------------------
-        // TEXTBOX
+        // EVENTOS DEL TEXTBOX 
         //--------------------------------------------------------------
 
         private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e)
@@ -179,12 +187,11 @@ namespace FormBaja
         }
 
         
-        
-
 
         //--------------------------------------------------------------
         // BOTONES
         //--------------------------------------------------------------
+
         private void BtnNuevoUsuario_Click(object sender, EventArgs e)
         {
             FormNuevoUsuario formNuevoUsuario = new FormNuevoUsuario();
@@ -199,12 +206,26 @@ namespace FormBaja
             FormNuevoPrograma formNuevoPrograma = new FormNuevoPrograma();  
             formNuevoPrograma.ShowDialog();
 
+            // ACTUALIZAMOS EL GRID LLAMANDO PRIMERO AL METODO PARA CONVERTIR LAS COLUMNAS EN DESPLEGABLES
+            // Y LUEGO LLAMAMOS AL METODO QUE CARGA LOS DATOS
+            
             accesoDatos.CargarDatos(DgvBajas);
+            ConvertirCeldasEnDesplegables();
         }
 
+        private void BtnExportar_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("prueba");
+        }
+
+
+
+        // test
         private void MaterialButton1_Click(object sender, EventArgs e)
         {
             accesoDatos.CargarDatos(DgvBajas);
         }
+
+        
     }
 }
