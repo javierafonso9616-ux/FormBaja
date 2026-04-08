@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using DateTime = System.DateTime;
 
 namespace FormBaja.Datos
 {
@@ -108,6 +109,31 @@ namespace FormBaja.Datos
                 
             }
         }
+
+        // ACTUALIZAR DATOS USUARIOS
+        public void ActualizarDatosUsuarios(string dni, string nombre, string apellidos)
+        {
+            string consulta = "UPDATE Usuarios SET NOMBRE = @nombre, APELLIDOS = @apellidos WHERE DNI = @dni";
+
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                try
+                {
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@dni", dni);
+                        cmd.Parameters.AddWithValue("@nombre", nombre);
+                        cmd.Parameters.AddWithValue("@apellidos", (object)apellidos ?? DBNull.Value);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar: " + ex.Message);
+                }
+            }
+        }
         
         // INSERTAR PROGRAMA EN LA BASE DE DATOS
         public void AñadirColumnaPrograma(string nombrePrograma)
@@ -147,7 +173,7 @@ namespace FormBaja.Datos
             }
         }
 
-        // INSERTAR DATOS
+        // ACTUALIZAR DATOS PROGRAMA
         public void ActualizarDatosProgramas(string dni, string nombreColumna, string valor)
         {
             // USAMOS [] PARA QUE EL NOMBRE DE LA COLUMNA SEA DINÁMICO Y

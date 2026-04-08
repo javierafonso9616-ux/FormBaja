@@ -293,6 +293,25 @@ namespace FormBaja
                     MessageBox.Show(ex.Message, "Error al guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
+            if (e.ColumnIndex >=0 && e.ColumnIndex <= 2){
+            
+                try
+                {
+                    // PILLAMOS EL DNI (CLAVE PRIMARIA)
+                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString().ToUpper().Trim();
+                    string nombre = DgvBajas.Rows[e.RowIndex].Cells[1].Value.ToString().ToUpper().Trim();
+                    string apellidos = DgvBajas.Rows[e.RowIndex].Cells[2].Value.ToString().ToUpper().Trim();
+
+                    // LLAMAMOS AL METODO PARA INSERTAR LOS DATOS NUEVOS
+                    accesoDatos.ActualizarDatosUsuarios(dni, nombre, apellidos);
+            }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error al guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        
         }
 
         //--------------------------------------------------------------
