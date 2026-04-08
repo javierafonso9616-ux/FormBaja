@@ -20,7 +20,7 @@ namespace FormBaja
         private Timer timerBusqueda;
         
         // [DEBUG] cronometro
-         private Stopwatch cronometroCarga;
+        // private Stopwatch cronometroCarga;
 
         //--------------------------------------------------------------
         // CREACION DEL FOMULARIO INICIAL
@@ -29,8 +29,8 @@ namespace FormBaja
 
         public FormPrincipal()
         {
-            // [DEBUG] cronometro
-            cronometroCarga = Stopwatch.StartNew();
+           // [DEBUG] cronometro
+           //cronometroCarga = Stopwatch.StartNew();
 
 
             InitializeComponent();
@@ -50,7 +50,7 @@ namespace FormBaja
 
           
 
-            ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER
+            ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER   
 
             // CENTRADO DE FORMULARIO PARAA EVITAR QUE TAPE LA BARRA DE WINDOWS Y SE PONGA EN PANTALLA MAXIMIZADA( NO COMPLETA)
             this.StartPosition = FormStartPosition.Manual;
@@ -75,11 +75,12 @@ namespace FormBaja
 
 
             //  [DEBUG] cronometro
-              cronometroCarga.Stop();
-              long milisegundos = cronometroCarga.ElapsedMilliseconds;
-              Debug.WriteLine($">>> TIEMPO TOTAL DE CARGA: {milisegundos} ms");
+            //  cronometroCarga.Stop();
+            //  long milisegundos = cronometroCarga.ElapsedMilliseconds;
+            //  Debug.WriteLine($">>> TIEMPO TOTAL DE CARGA: {milisegundos} ms");
         }
 
+        // METODO PARA AGILIZAR LA CARGA DEL PROGRAMA
         protected override CreateParams CreateParams
         {
             get
@@ -165,6 +166,24 @@ namespace FormBaja
             // CONVERTISMOS LAS CELDAS EN DESPLEGABLES
             ConvertirCeldasEnDesplegables();
 
+            // 1. ACTIVAR EL SALTO DE LÍNEA en las columnas de Nombre y Apellidos
+            DgvBajas.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            DgvBajas.Columns[2].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+            // 2. IMPORTANTE: Permitir que las filas crezcan en altura para mostrar el salto
+            DgvBajas.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            // 3. LIMITAR EL ANCHO para forzar el salto
+            // Si dejamos AutoSizeColumnsMode en DisplayedCells, la columna se estirará 
+            // lo máximo posible. Para forzar el salto, es mejor darles un ancho fijo:
+            DgvBajas.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            DgvBajas.Columns[1].Width = 120; // Ajusta este valor a tu gusto
+
+            DgvBajas.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            DgvBajas.Columns[2].Width = 120; // Ajusta este valor a tu gusto
+
+
+
             // AJUSTE DE COLUMNAS
             DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
             
@@ -203,6 +222,7 @@ namespace FormBaja
             DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 10);
             DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI EN NEGRITA
+          
 
             DgvBajas.ResumeLayout(); // PARTE DEL AGILIZAMIENTO DEL PROGRAMA
         }
@@ -333,7 +353,7 @@ namespace FormBaja
         // test
         private void MaterialButton1_Click(object sender, EventArgs e)
         {
-            accesoDatos.CargarDatos(DgvBajas);
+            accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
             ConfigurarGrid();
         }
 
