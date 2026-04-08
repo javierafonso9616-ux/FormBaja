@@ -17,7 +17,7 @@ namespace FormBaja.Datos
         private readonly string cadenaConexion = ConfigurationManager.ConnectionStrings["CadenaUsuario"].ConnectionString;
 
         //--------------------------------------------------------------
-        // METODOS
+        // METODOS DE ACCESO Y EDICION
         //--------------------------------------------------------------
 
         // CARGA DE DATOS
@@ -111,18 +111,16 @@ namespace FormBaja.Datos
         }
 
         // ACTUALIZAR DNI USUARIO
-        public void ActualizarDniUsuario(string dniViejo, string dniNuevo)
+        public void ActualizarDniUsuario(string dniOriginal, string dniNuevo)
         {
-            // SQL permite actualizar una PK siempre que el nuevo valor no esté duplicado
-            string consulta = "UPDATE Usuarios SET DNI = @nuevo WHERE DNI = @viejo";
-
+            string consulta = "UPDATE Usuarios SET DNI = @nuevo WHERE DNI = @original";
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))
             {
                 conexion.Open();
                 using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                 {
                     cmd.Parameters.AddWithValue("@nuevo", dniNuevo);
-                    cmd.Parameters.AddWithValue("@viejo", dniViejo);
+                    cmd.Parameters.AddWithValue("@original", dniOriginal);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -219,6 +217,50 @@ namespace FormBaja.Datos
             }
         }
 
+        // BORRAR REGISTRO
+        public void BorrarRegistro(string dni)
+        {
+            string consulta = "DELETE FROM Usuarios WHERE DNI = @dni";
+
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                try {
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@dni", dni);
+                        cmd.ExecuteNonQuery();
+
+                        MessageBox.Show("Registro borrado correctamente.");
+
+                    
+                    }
+                
+                }
+
+
+
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al borrar el registro: " + ex.Message);
+                }
+
+
+            }
+
+
+        }
+
+
+
+
+
+        //------------------------------------------------------------------------
+        // OTROS METODOS
+        //------------------------------------------------------------------------
+
+
         // BUSCAR USUARIO POR DNI O NOMBRE
         public void BuscarUsuario(DataGridView dgv, string txtBusqueda)
         {
@@ -234,9 +276,9 @@ namespace FormBaja.Datos
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
-                        // CONCATENAMOS CON % PARA QUE BUSQUE EN CUALQUIER PARTE
                         
-                        cmd.Parameters.AddWithValue("@busqueda", "%" + txtBusqueda + "%");
+                        
+                        cmd.Parameters.AddWithValue("@busqueda",  txtBusqueda + "%");
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {

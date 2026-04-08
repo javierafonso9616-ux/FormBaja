@@ -55,7 +55,6 @@
             this.BtnGuardarPrograma.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BtnGuardarPrograma.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.BtnGuardarPrograma.Depth = 0;
-            this.BtnGuardarPrograma.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.BtnGuardarPrograma.HighEmphasis = true;
             this.BtnGuardarPrograma.Icon = null;
             this.BtnGuardarPrograma.Location = new System.Drawing.Point(409, 157);

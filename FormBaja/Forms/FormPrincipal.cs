@@ -19,7 +19,8 @@ namespace FormBaja
         public readonly AccesoDatos accesoDatos = new AccesoDatos();
         private Timer timerBusqueda;
         private string dniOriginal;
-        private bool hayCambios = false;
+        private ContextMenuStrip menuContextual;
+
         private bool esCargaInterna = false; // BANDERA PARA GESTIONAR LOS CAMBIOS DE CELDA EN EL GRID
 
         // [DEBUG] cronometro
@@ -55,6 +56,8 @@ namespace FormBaja
 
             ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER   
 
+            ConfigurarMenuContextual(); // CONFIGURACION DEL MENU
+
             // CENTRADO DE FORMULARIO PARAA EVITAR QUE TAPE LA BARRA DE WINDOWS Y SE PONGA EN PANTALLA MAXIMIZADA( NO COMPLETA)
             this.StartPosition = FormStartPosition.Manual;
             this.Bounds = Screen.PrimaryScreen.WorkingArea;
@@ -72,6 +75,7 @@ namespace FormBaja
             accesoDatos.CargarDatos(DgvBajas); // CARGA DE DATOS INICIAL
             ConfigurarGrid();
 
+            
             this.ResumeLayout();
             this.Opacity = 1;
 
@@ -106,14 +110,14 @@ namespace FormBaja
 
         private void BusquedaDelay(object sender, EventArgs e)
         {
-            // se para el timer para evitar que se ejecute varias veces
+            // PARAMOS EL TIMER PARA EVITAR QUE SE EJECUTE VARIAS VECES
             timerBusqueda.Stop();
 
             string busqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
 
             try
             {
-                // ejecutamos la búsqueda en la base de datos
+                // REALIZAMOS LA BUSQUEDA, PASANDOLE EL DATAGRIDVIEW Y EL TEXTO DE BUSQUEDA
                 accesoDatos.BuscarUsuario(DgvBajas, busqueda);
             }
             catch (Exception ex)
@@ -123,8 +127,10 @@ namespace FormBaja
         }
 
         private void ConvertirCeldasEnDesplegables() {
-            // Recorremos todas las columnas a partir de la 3 (donde empiezan los programas)
-            // DNI (0), NOMBRE (1), APELLIDOS (2) se quedan como texto
+            
+            // RECORREMOS LAS COLUMNAS DESDE EL INDICE 3 EN ADELANTE
+            // (EL INDICE 0 ES DNI, EL INDICE 1 ES NOMBRE, EL INDICE 2 ES APELLIDOS)
+            
             for (int i = 3; i < DgvBajas.Columns.Count; i++)
             {
                 string nombreColumna = DgvBajas.Columns[i].Name;
@@ -157,6 +163,58 @@ namespace FormBaja
             }
         }
 
+        private void BorrarFilaSeleccionada()
+        {
+            if (DgvBajas.SelectedRows.Count > 0)
+            {
+                // OBTENEMOS EL DNI DE LA FILA SELECCIONADA Y EL NOMBRE 
+                string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString();
+                string nombre = DgvBajas.SelectedRows[0].Cells[1].Value.ToString();
+
+                DialogResult resultado = MessageBox.Show(
+                    $"¿Estás seguro de que deseas eliminar a {nombre} (DNI: {dni})?\nEsta acción no se puede deshacer.",
+                    "Confirmar eliminación",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                // SI SE CONFIRMA LA ELIMINACION 
+                if (resultado == DialogResult.Yes)
+                {
+                    try
+                    {
+                        // ELIMINAMOS EL REGISTRO PASANDOLE LA CLAVE PRIMARIA (DNI)
+                        accesoDatos.BorrarRegistro(dni);
+
+                        // REFRESCAMOS EL GRID
+                        accesoDatos.CargarDatos(DgvBajas);
+                        ConfigurarGrid();
+
+                        MessageBox.Show("Registro eliminado correctamente.");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ConfigurarMenuContextual()
+        {
+            menuContextual = new ContextMenuStrip();
+
+            // CREAMOS EL ITEM DE BORRAR
+            ToolStripMenuItem itemBorrar = new ToolStripMenuItem("Borrar Registro")
+            {
+                Image = SystemIcons.Error.ToBitmap()
+            };
+
+            // LE ASIGNAMOS EL METODO DE BORRAR
+            itemBorrar.Click += (s, e) => BorrarFilaSeleccionada();
+
+            // SE AÑADE AL MENU
+            menuContextual.Items.Add(itemBorrar);
+        }
 
         //--------------------------------------------------------------
         // CONFIGURAR EL GRID
@@ -261,24 +319,63 @@ namespace FormBaja
         // EVENTO PARA FORZAR AL GRID A "CONFIRMAR" LOS CAMBIOS AL ELEGIR UNA OPCION
         private void DgvBajas_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
-            if (DgvBajas.IsCurrentCellDirty)
+           
+            if (DgvBajas.IsCurrentCellDirty && DgvBajas.CurrentCellAddress.X >= 3)
             {
                 DgvBajas.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
         }
 
-        
         // EVENTO QUE MANDA LOS DATOS A LA BASE DE DATOS SEGÚN LA COLUMNA EDITADA
         private void DgvBajas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 || esCargaInterna) return;
 
-            // EVITAMOS QUE SE EJECUTE EN EL MOMENTO DE LA CARGA DEL FORMULARIO
-           // if (e.RowIndex < 0 || esCargaInterna) return;
-           hayCambios = true;
-           
+            try
+            {
+                esCargaInterna = true;
 
-           
+                // CASO EDITAR DNI (COLUMNA 0)
+                if (e.ColumnIndex == 0)
+                {
+                    string dniNuevo = DgvBajas.Rows[e.RowIndex].Cells[0].Value?.ToString().ToUpper().Trim();
 
+                    if (!string.IsNullOrEmpty(dniNuevo) && dniNuevo != dniOriginal && !string.IsNullOrEmpty(dniOriginal))
+                    {
+                        accesoDatos.ActualizarDniUsuario(dniOriginal, dniNuevo);
+                        DgvBajas.Rows[e.RowIndex].Cells[0].Value = dniNuevo; // ASI REFLEJA EL CAMBIO
+                        dniOriginal = dniNuevo; // ACTUALIZAMOS EL DNI ORIGINAL
+                    }
+                }
+                // CASO EDITAR NOMBRE O APELLIDOS (COLUMNA 1 y 2)
+                else if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
+                {
+                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString().ToUpper().Trim();
+                    string nombre = DgvBajas.Rows[e.RowIndex].Cells[1].Value?.ToString().ToUpper().Trim() ?? "";
+                    string apellidos = DgvBajas.Rows[e.RowIndex].Cells[2].Value?.ToString().ToUpper().Trim() ?? "";
+
+                    accesoDatos.ActualizarDatosUsuarios(dni, nombre, apellidos);
+
+                    // REFLEJAMOS LOS CAMBIOS EN EL GRID 
+                    DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = (e.ColumnIndex == 1) ? nombre : apellidos;
+                }
+                // CASO EDITAR PROGRAMAS (COLUMNA 3 EN ADELANTE )
+                else if (e.ColumnIndex >= 3)
+                {
+                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
+                    string programa = DgvBajas.Columns[e.ColumnIndex].Name;
+                    string valor = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+
+                    accesoDatos.ActualizarDatosProgramas(dni, programa, valor);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar: " + ex.Message);
+                accesoDatos.CargarDatos(DgvBajas);
+                ConfigurarGrid();
+            }
+            finally { esCargaInterna = false; }
         }
 
         // EVENTO QUE RECOGE EL CAMBIO DE DNI
@@ -288,6 +385,22 @@ namespace FormBaja
             if (e.ColumnIndex == 0 && DgvBajas.Rows[e.RowIndex].Cells[0].Value != null)
             {
                 dniOriginal = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
+            }
+        }
+
+        // EVENTO CLICK DERECHO EN EL GRID
+        private void DgvBajas_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // Verificar que el click sea derecho y en una fila válida
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
+            {
+                // Seleccionamos la fila donde se hizo click derecho
+                DgvBajas.ClearSelection();
+                DgvBajas.Rows[e.RowIndex].Selected = true;
+                DgvBajas.CurrentCell = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                // Mostramos el menú en la posición del ratón
+                menuContextual.Show(Cursor.Position);
             }
         }
 
@@ -355,6 +468,9 @@ namespace FormBaja
 
         }
 
+        
+
+        
 
 
 
@@ -367,71 +483,6 @@ namespace FormBaja
             ConfigurarGrid();
         }
 
-        private void DgvBajas_RowValidated(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!hayCambios) return;
-            try
-            {
-                //esCargaInterna = true;
-
-                // 1. CASO: CAMBIO EN EL DNI (COLUMNA 0)
-                if (e.ColumnIndex == 0)
-                {
-                    string dniNuevo = DgvBajas.Rows[e.RowIndex].Cells[0].Value?.ToString().ToUpper().Trim();
-
-                    // Solo actuamos si el DNI ha cambiado realmente y no está vacío
-                    if (!string.IsNullOrEmpty(dniNuevo) && dniNuevo != dniOriginal && !string.IsNullOrEmpty(dniOriginal))
-                    {
-                        // Llamamos al método especial para actualizar la Clave Primaria
-                        accesoDatos.ActualizarDniUsuario(dniOriginal, dniNuevo);
-
-                        // REFLEJAMOS EL CAMBIO
-                        DgvBajas.Rows[e.RowIndex].Cells[0].Value = dniNuevo;
-                        // Actualizamos la variable para futuros cambios en la misma sesión
-                        dniOriginal = dniNuevo;
-                    }
-                }
-                // 2. CASO: CAMBIO EN NOMBRE O APELLIDOS (COLUMNAS 1 Y 2)
-                else if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
-                {
-                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString().ToUpper().Trim();
-                    string nombre = DgvBajas.Rows[e.RowIndex].Cells[1].Value?.ToString().ToUpper().Trim();
-                    string apellidos = DgvBajas.Rows[e.RowIndex].Cells[2].Value?.ToString().ToUpper().Trim();
-
-
-                    // LLAMAMOS AL METODO ACTUALIZAR DATOS USUARIOS
-                    accesoDatos.ActualizarDatosUsuarios(dni, nombre, apellidos);
-
-                    // REFLEJAMOS EL CAMBIO
-                    DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = (e.ColumnIndex == 1) ? nombre : apellidos;
-
-
-
-                }
-                // 3. CASO: CAMBIO EN LOS PROGRAMAS (COLUMNAS 3 EN ADELANTE)
-                else if (e.ColumnIndex >= 3)
-                {
-                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
-                    string programa = DgvBajas.Columns[e.ColumnIndex].Name;
-                    string nuevoValor = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
-
-                    // Llamamos al método de programas (Desplegables)
-                    accesoDatos.ActualizarDatosProgramas(dni, programa, nuevoValor);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al guardar los cambios: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Si hay error (ej. DNI duplicado), refrescamos para volver al valor anterior
-                accesoDatos.CargarDatos(DgvBajas);
-                ConfigurarGrid();
-            }
-            finally
-            {
-                esCargaInterna = false; // Liberamos la bandera siempre
-
-            }
-        }
+        
     }
 }
