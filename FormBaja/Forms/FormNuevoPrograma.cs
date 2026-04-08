@@ -22,6 +22,17 @@ namespace FormBaja.Forms
         {
             InitializeComponent();
             GestorTema.ConfigurarMaterialSkin(this);
+
+
+
+            // ESTO ES PARA QUE EL ESCAPE CIERRE EL FORMULARIO
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) => {
+                if (e.KeyCode == Keys.Escape)
+                {
+                    this.Close();
+                }
+            };
         }
 
 
@@ -55,5 +66,7 @@ namespace FormBaja.Forms
             }
         }
 
+       
+        
     }
 }

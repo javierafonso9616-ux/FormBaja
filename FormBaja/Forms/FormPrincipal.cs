@@ -166,63 +166,77 @@ namespace FormBaja
             // CONVERTISMOS LAS CELDAS EN DESPLEGABLES
             ConvertirCeldasEnDesplegables();
 
-            // 1. ACTIVAR EL SALTO DE LÍNEA en las columnas de Nombre y Apellidos
-            DgvBajas.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            DgvBajas.Columns[2].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            // ACTIVAMOS EL MODO AUTOMÁTICO TEMPORALMENTE PARA QUE CÁLCULE EL TAMAÑO IDEAL
+            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // *ANTES TENIA ALLCELLS*
 
-            // 2. IMPORTANTE: Permitir que las filas crezcan en altura para mostrar el salto
+            // BLOQUEO DE COLUMNAS: RECORREMOS LAS COLUMNAS PARA FIJAR SU TAMAÑO ACTUAL
+            // ESTO EVITA QUE AL ORDENAR O RECARGAR SE VUELVA A MOVER
+
+            for (int i = 0; i < DgvBajas.Columns.Count; i++)
+            {
+                int anchoCalculado = DgvBajas.Columns[i].Width;
+                DgvBajas.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None; // BLOQUEO DE MODO AUTO
+                DgvBajas.Columns[i].Width = anchoCalculado;
+            }
+
+            // CONFIGURACIÓN ESPECIAL PARA NOMBRE Y APELLIDOS (SALTOS DE LÍNEA)
+            if (DgvBajas.Columns.Count > 2)
+            {
+                // NOMBRE: FIJAMOS UN ANCHO PARA EL WRAP
+                DgvBajas.Columns[1].Width = 100;
+                DgvBajas.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+                // APELLIDOS: ESTE ES EL QUE RELLENA EL HUECO (MODO FILL)
+
+                DgvBajas.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                DgvBajas.Columns[2].Width = 100;
+                DgvBajas.Columns[2].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            }
+
+            // APAGAMOS EL MODO AUTOMÁTICO GLOBAL (PARA QUE NO CAMBIE AL ORDENAR)
+            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+
+            // PERMITIR QUE LAS FILAS CREZCAN PARA EL SALTO DE LINEA
             DgvBajas.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-            // 3. LIMITAR EL ANCHO para forzar el salto
-            // Si dejamos AutoSizeColumnsMode en DisplayedCells, la columna se estirará 
-            // lo máximo posible. Para forzar el salto, es mejor darles un ancho fijo:
-            DgvBajas.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            DgvBajas.Columns[1].Width = 120; // Ajusta este valor a tu gusto
-
-            DgvBajas.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            DgvBajas.Columns[2].Width = 120; // Ajusta este valor a tu gusto
-
-
-
-            // AJUSTE DE COLUMNAS
-            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
-            
-        
 
             // BLOQUEO DE REDIMENSIONAR FILAS
             DgvBajas.AllowUserToResizeRows = false;
-            DgvBajas.RowHeadersVisible = false; // OCULTAMOS EL ENCABEZADO IZQUIERDO
-            
+            DgvBajas.RowHeadersVisible = false;
 
             // ESTILOS VISUALES Y COLORES
             DgvBajas.BackgroundColor = Color.White;
             DgvBajas.BorderStyle = BorderStyle.None;
             DgvBajas.GridColor = Color.FromArgb(230, 230, 230);
-            DgvBajas.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // SELECCION DE FILA COMPLETA
+            DgvBajas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             DgvBajas.MultiSelect = false;
 
+            // CONFIGURACION DE ESTILOS DE CABECERA
+            DgvBajas.EnableHeadersVisualStyles = false;
+            DgvBajas.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            DgvBajas.ColumnHeadersHeight = 60;
+            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243);
+            DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             
 
-            // CONFIGURACION DE ESTILOS DE CABECERA
-            DgvBajas.EnableHeadersVisualStyles = false; // DESACTIVAMOS EL ESTILO POR DEFECTO
-            DgvBajas.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            DgvBajas.ColumnHeadersHeight = 40;
 
-            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243); // AZUL CLARO
-            DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
             // ALTERNADO DE COLORES DE FILAS
             DgvBajas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
-            DgvBajas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251); // COLOR AL SELECCIONAR
+            DgvBajas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
             DgvBajas.DefaultCellStyle.SelectionForeColor = Color.Black;
 
             // ALINEAMIENTO DE TEXTO DE LAS CELDAS
             DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 10);
-            DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); // DNI EN NEGRITA
-          
+            DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+
+            // CONFIGURACIÓN ESPECIAL PARA EL DNI
+            if (DgvBajas.Columns.Count > 0)
+            {
+                DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+                DgvBajas.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
 
             DgvBajas.ResumeLayout(); // PARTE DEL AGILIZAMIENTO DEL PROGRAMA
         }
