@@ -1,16 +1,11 @@
 ﻿using ClosedXML.Excel;
 using FormBaja.Entidades;
-using FormBaja.Forms;
-using Microsoft.IdentityModel.Protocols;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using DateTime = System.DateTime;
 
 namespace FormBaja.Datos
 {
@@ -22,7 +17,7 @@ namespace FormBaja.Datos
         private readonly string cadenaConexion = ConfigurationManager.ConnectionStrings["CadenaUsuario"].ConnectionString;
 
         //--------------------------------------------------------------
-        // METODOS
+        // METODOS DE ACCESO Y EDICION
         //--------------------------------------------------------------
 
         // CARGA DE DATOS
@@ -48,7 +43,8 @@ namespace FormBaja.Datos
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            // Esto carga automáticamente TODAS las columnas existentes de forma dinámica
+                            // CARGAMOS LOS DATOS EN LA TABLA
+
                             tabla.Load(reader);
                         }
                     }
@@ -113,6 +109,47 @@ namespace FormBaja.Datos
                 
             }
         }
+
+        // ACTUALIZAR DNI USUARIO
+        public void ActualizarDniUsuario(string dniOriginal, string dniNuevo)
+        {
+            string consulta = "UPDATE Usuarios SET DNI = @nuevo WHERE DNI = @original";
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                {
+                    cmd.Parameters.AddWithValue("@nuevo", dniNuevo);
+                    cmd.Parameters.AddWithValue("@original", dniOriginal);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // ACTUALIZAR DATOS USUARIOS
+        public void ActualizarDatosUsuarios(string dni, string nombre, string apellidos)
+        {
+            string consulta = "UPDATE Usuarios SET NOMBRE = @nombre, APELLIDOS = @apellidos WHERE DNI = @dni";
+
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                try
+                {
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@dni", dni);
+                        cmd.Parameters.AddWithValue("@nombre", nombre);
+                        cmd.Parameters.AddWithValue("@apellidos", (object)apellidos ?? DBNull.Value);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar: " + ex.Message);
+                }
+            }
+        }
         
         // INSERTAR PROGRAMA EN LA BASE DE DATOS
         public void AñadirColumnaPrograma(string nombrePrograma)
@@ -152,7 +189,7 @@ namespace FormBaja.Datos
             }
         }
 
-        // INSERTAR DATOS
+        // ACTUALIZAR DATOS PROGRAMA
         public void ActualizarDatosProgramas(string dni, string nombreColumna, string valor)
         {
             // USAMOS [] PARA QUE EL NOMBRE DE LA COLUMNA SEA DINÁMICO Y
@@ -166,7 +203,7 @@ namespace FormBaja.Datos
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
-                        // Si el valor es vacío, guardamos NULL en la base de datos
+                        // SI ES VACIO LO GUARDAMOS COMO NULL
                         cmd.Parameters.AddWithValue("@valor", string.IsNullOrEmpty(valor) ? (object)DBNull.Value : valor);
                         cmd.Parameters.AddWithValue("@dni", dni);
 
@@ -179,6 +216,50 @@ namespace FormBaja.Datos
                 }
             }
         }
+
+        // BORRAR REGISTRO
+        public void BorrarRegistro(string dni)
+        {
+            string consulta = "DELETE FROM Usuarios WHERE DNI = @dni";
+
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                try {
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@dni", dni);
+                        cmd.ExecuteNonQuery();
+
+                        MessageBox.Show("Registro borrado correctamente.");
+
+                    
+                    }
+                
+                }
+
+
+
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al borrar el registro: " + ex.Message);
+                }
+
+
+            }
+
+
+        }
+
+
+
+
+
+        //------------------------------------------------------------------------
+        // OTROS METODOS
+        //------------------------------------------------------------------------
+
 
         // BUSCAR USUARIO POR DNI O NOMBRE
         public void BuscarUsuario(DataGridView dgv, string txtBusqueda)
@@ -195,17 +276,16 @@ namespace FormBaja.Datos
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
-                        // creamos el parametro de la busqueda y le pasamos el txtBusqueda,
-                        // el % es para que busque en cualquier parte de la cadena de texto en lugar de solo al principio
-                        // o exactamente lo que hayas escrito.
-                        cmd.Parameters.AddWithValue("@busqueda", "%" + txtBusqueda + "%");
+                        
+                        
+                        cmd.Parameters.AddWithValue("@busqueda",  txtBusqueda + "%");
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             tabla.Load(reader);
                         }
                     }
-                    // asignamos la tabla al dataGridView baja
+                    // ASIGNAMOS LA TABLA AL GRID
                     dgv.DataSource = tabla;
                 }
                 catch (Exception ex)
