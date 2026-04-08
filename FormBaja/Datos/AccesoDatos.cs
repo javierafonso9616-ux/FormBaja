@@ -110,6 +110,24 @@ namespace FormBaja.Datos
             }
         }
 
+        // ACTUALIZAR DNI USUARIO
+        public void ActualizarDniUsuario(string dniViejo, string dniNuevo)
+        {
+            // SQL permite actualizar una PK siempre que el nuevo valor no esté duplicado
+            string consulta = "UPDATE Usuarios SET DNI = @nuevo WHERE DNI = @viejo";
+
+            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+            {
+                conexion.Open();
+                using (SqlCommand cmd = new SqlCommand(consulta, conexion))
+                {
+                    cmd.Parameters.AddWithValue("@nuevo", dniNuevo);
+                    cmd.Parameters.AddWithValue("@viejo", dniViejo);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         // ACTUALIZAR DATOS USUARIOS
         public void ActualizarDatosUsuarios(string dni, string nombre, string apellidos)
         {

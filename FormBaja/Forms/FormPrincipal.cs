@@ -18,7 +18,10 @@ namespace FormBaja
         //--------------------------------------------------------------
         public readonly AccesoDatos accesoDatos = new AccesoDatos();
         private Timer timerBusqueda;
-        
+        private string dniOriginal;
+        private bool hayCambios = false;
+        private bool esCargaInterna = false; // BANDERA PARA GESTIONAR LOS CAMBIOS DE CELDA EN EL GRID
+
         // [DEBUG] cronometro
         // private Stopwatch cronometroCarga;
 
@@ -264,54 +267,28 @@ namespace FormBaja
             }
         }
 
-        // EVENTO QUE MANDA LOS DATOS A LA BASE DE DATOS
+        
+        // EVENTO QUE MANDA LOS DATOS A LA BASE DE DATOS SEGÚN LA COLUMNA EDITADA
         private void DgvBajas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            // EVITAR QUE SE EJECUTE EN EL ENCABEZADO
-            if (e.RowIndex < 0) return;
 
-            // SI LA COLUMNA ES UN DESPLEGABLE
-            if (e.ColumnIndex >= 3)
+            // EVITAMOS QUE SE EJECUTE EN EL MOMENTO DE LA CARGA DEL FORMULARIO
+           // if (e.RowIndex < 0 || esCargaInterna) return;
+           hayCambios = true;
+           
+
+           
+
+        }
+
+        // EVENTO QUE RECOGE EL CAMBIO DE DNI
+        private void DgvBajas_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            // Si el usuario entra a editar la columna DNI (índice 0)
+            if (e.ColumnIndex == 0 && DgvBajas.Rows[e.RowIndex].Cells[0].Value != null)
             {
-                try
-                {
-                    // PILLAMOS EL DNI (CLAVE PRIMARIA)
-                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
-
-                    // NOMBRE DEL PROGRAMA
-                    string programa = DgvBajas.Columns[e.ColumnIndex].Name;
-
-                    // OBTENEMOS EL NUEVO VALOR
-                    string nuevoValor = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
-
-                    // LLAMAMOS AL METODO PARA INSERTAR LOS DATOS NUEVOS
-                    accesoDatos.ActualizarDatosProgramas(dni, programa, nuevoValor);
-                  
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error al guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                dniOriginal = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
             }
-
-            if (e.ColumnIndex >=0 && e.ColumnIndex <= 2){
-            
-                try
-                {
-                    // PILLAMOS EL DNI (CLAVE PRIMARIA)
-                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString().ToUpper().Trim();
-                    string nombre = DgvBajas.Rows[e.RowIndex].Cells[1].Value.ToString().ToUpper().Trim();
-                    string apellidos = DgvBajas.Rows[e.RowIndex].Cells[2].Value.ToString().ToUpper().Trim();
-
-                    // LLAMAMOS AL METODO PARA INSERTAR LOS DATOS NUEVOS
-                    accesoDatos.ActualizarDatosUsuarios(dni, nombre, apellidos);
-            }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error al guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        
         }
 
         //--------------------------------------------------------------
@@ -390,6 +367,71 @@ namespace FormBaja
             ConfigurarGrid();
         }
 
-        
+        private void DgvBajas_RowValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!hayCambios) return;
+            try
+            {
+                //esCargaInterna = true;
+
+                // 1. CASO: CAMBIO EN EL DNI (COLUMNA 0)
+                if (e.ColumnIndex == 0)
+                {
+                    string dniNuevo = DgvBajas.Rows[e.RowIndex].Cells[0].Value?.ToString().ToUpper().Trim();
+
+                    // Solo actuamos si el DNI ha cambiado realmente y no está vacío
+                    if (!string.IsNullOrEmpty(dniNuevo) && dniNuevo != dniOriginal && !string.IsNullOrEmpty(dniOriginal))
+                    {
+                        // Llamamos al método especial para actualizar la Clave Primaria
+                        accesoDatos.ActualizarDniUsuario(dniOriginal, dniNuevo);
+
+                        // REFLEJAMOS EL CAMBIO
+                        DgvBajas.Rows[e.RowIndex].Cells[0].Value = dniNuevo;
+                        // Actualizamos la variable para futuros cambios en la misma sesión
+                        dniOriginal = dniNuevo;
+                    }
+                }
+                // 2. CASO: CAMBIO EN NOMBRE O APELLIDOS (COLUMNAS 1 Y 2)
+                else if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
+                {
+                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString().ToUpper().Trim();
+                    string nombre = DgvBajas.Rows[e.RowIndex].Cells[1].Value?.ToString().ToUpper().Trim();
+                    string apellidos = DgvBajas.Rows[e.RowIndex].Cells[2].Value?.ToString().ToUpper().Trim();
+
+
+                    // LLAMAMOS AL METODO ACTUALIZAR DATOS USUARIOS
+                    accesoDatos.ActualizarDatosUsuarios(dni, nombre, apellidos);
+
+                    // REFLEJAMOS EL CAMBIO
+                    DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = (e.ColumnIndex == 1) ? nombre : apellidos;
+
+
+
+                }
+                // 3. CASO: CAMBIO EN LOS PROGRAMAS (COLUMNAS 3 EN ADELANTE)
+                else if (e.ColumnIndex >= 3)
+                {
+                    string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
+                    string programa = DgvBajas.Columns[e.ColumnIndex].Name;
+                    string nuevoValor = DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+
+                    // Llamamos al método de programas (Desplegables)
+                    accesoDatos.ActualizarDatosProgramas(dni, programa, nuevoValor);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar los cambios: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Si hay error (ej. DNI duplicado), refrescamos para volver al valor anterior
+                accesoDatos.CargarDatos(DgvBajas);
+                ConfigurarGrid();
+            }
+            finally
+            {
+                esCargaInterna = false; // Liberamos la bandera siempre
+
+            }
+        }
     }
 }

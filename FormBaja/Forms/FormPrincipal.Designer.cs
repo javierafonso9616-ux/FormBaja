@@ -210,9 +210,11 @@
             this.DgvBajas.Name = "DgvBajas";
             this.DgvBajas.Size = new System.Drawing.Size(1886, 812);
             this.DgvBajas.TabIndex = 0;
+            this.DgvBajas.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.DgvBajas_CellBeginEdit);
             this.DgvBajas.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellEnter);
             this.DgvBajas.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellValueChanged);
             this.DgvBajas.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvBajas_CurrentCellDirtyStateChanged);
+            this.DgvBajas.RowValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_RowValidated);
             // 
             // FormPrincipal
             // 
