@@ -234,7 +234,7 @@ namespace FormBaja
 
         private void AbrirDetallesUsuario()
         {
-            string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString();
+            string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString().Trim();
             FormDetallesUsuario frm = new FormDetallesUsuario(dni);
             if (frm.ShowDialog() == DialogResult.OK)
             {

@@ -286,13 +286,11 @@ namespace FormBaja.Datos
             {
                 cx.Open();
 
-                // 1. REPARACIÓN AUTOMÁTICA DE LA BASE DE DATOS
-                // Obtenemos qué columnas existen actualmente en la tabla Usuarios
+                // 1. REPARACIÓN AUTOMÁTICA (Sincroniza columnas faltantes)
                 DataTable esquema = cx.GetSchema("Columns", new[] { null, null, "Usuarios" });
                 var columnasExistentes = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (DataRow col in esquema.Rows) columnasExistentes.Add(col["COLUMN_NAME"].ToString());
 
-                // Buscamos programas que no tengan su columna _Fecha
                 foreach (string colName in columnasExistentes)
                 {
                     if (colName != "DNI" && colName != "NOMBRE" && colName != "APELLIDOS" && !colName.EndsWith("_Fecha"))
@@ -300,22 +298,18 @@ namespace FormBaja.Datos
                         string colFecha = colName + "_Fecha";
                         if (!columnasExistentes.Contains(colFecha))
                         {
-                            // Si el programa existe pero la fecha no, la creamos en SQL automáticamente
                             string sqlAlter = $"ALTER TABLE Usuarios ADD [{colFecha}] DATETIME NULL";
-                            using (SqlCommand cmdAlter = new SqlCommand(sqlAlter, cx))
-                            {
-                                cmdAlter.ExecuteNonQuery();
-                            }
+                            using (SqlCommand cmdAlter = new SqlCommand(sqlAlter, cx)) { cmdAlter.ExecuteNonQuery(); }
                         }
                     }
                 }
 
-                // 2. CARGA DE DATOS NORMAL
+                // 2. CARGA DE DATOS (Usamos Trim para evitar fallos de búsqueda)
                 DataTable dt = new DataTable();
                 string consulta = "SELECT * FROM Usuarios WHERE DNI = @dni";
                 using (SqlCommand cmd = new SqlCommand(consulta, cx))
                 {
-                    cmd.Parameters.AddWithValue("@dni", dni);
+                    cmd.Parameters.AddWithValue("@dni", dni.Trim());
                     dt.Load(cmd.ExecuteReader());
                 }
                 return dt;
