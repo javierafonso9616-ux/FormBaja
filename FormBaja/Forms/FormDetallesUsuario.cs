@@ -72,6 +72,7 @@ namespace FormBaja.Forms
             this.Controls.Add(panelFooter);
 
             // ELFooter DEBE ESTAR AL FRENTE para que el Dock=Fill lo respete
+            panelContenedor.SendToBack();
             panelFooter.BringToFront();
         }
 
@@ -100,15 +101,15 @@ namespace FormBaja.Forms
                 CrearFilaPrograma(nombreCol, fila[nombreCol]?.ToString(), valorFecha);
             }
 
-            // --- EL ESPACIADOR MÁGICO ---
+            // --- EL ESPACIADOR  ---
             // Añade un Label vacío de 40px de alto para asegurar que el scroll baje del todo
-            panelContenedor.Controls.Add(new Label { Text = "", Height = 40, Width = 10 });
+            panelContenedor.Controls.Add(new Label { Text = "", Height = 100, Width = 10 });
         }
 
         private void CrearFilaPrograma(string programa, string estadoActual, object fechaActual)
         {
             // Bajamos el ancho a 650 o 680 para asegurar que el scroll no tape el DatePicker
-            Panel fila = new Panel { Width = 650, Height = 100, Margin = new Padding(0, 10, 0, 0) };
+            Panel fila = new Panel { Width = 650, Height = 120, Margin = new Padding(0, 10, 0, 0) };
 
             Label lblProg = new Label
             {
