@@ -150,17 +150,15 @@ namespace FormBaja.Datos
                 }
             }
         }
-        
+
         // INSERTAR PROGRAMA EN LA BASE DE DATOS
         public void AñadirColumnaPrograma(string nombrePrograma)
         {
-            if (string.IsNullOrEmpty(nombrePrograma)) {
-            
-                MessageBox.Show("El nombre del programa no puede estar vacio.");
-                return;
-            } 
+            if (string.IsNullOrEmpty(nombrePrograma)) return;
 
-            string consulta = $"ALTER TABLE Usuarios ADD [{nombrePrograma}] NVARCHAR(50) NULL";
+            // Creamos la columna de estado y la columna de fecha vinculada
+            string consulta = $@"ALTER TABLE Usuarios ADD [{nombrePrograma}] NVARCHAR(50) NULL;
+                         ALTER TABLE Usuarios ADD [{nombrePrograma}_Fecha] DATETIME NULL;";
 
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))
             {
@@ -170,17 +168,8 @@ namespace FormBaja.Datos
                     using (SqlCommand cmd = new SqlCommand(consulta, conexion))
                     {
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show("Programa agregado correctamente.");
+                        MessageBox.Show("Programa y columna de fecha agregados correctamente.");
                     }
-                }
-                catch (SqlException ex)
-                {
-                    // Error 1706: La columna ya existe
-                    if (ex.Number == 1706 || ex.Message.Contains("already exists"))
-                    {
-                        throw new Exception("El programa ya existe en la base de datos.");
-                    }
-                    throw new Exception("Error de SQL: " + ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -252,7 +241,43 @@ namespace FormBaja.Datos
 
         }
 
+        // METODOS PARA EL FORM DETALLES FECHA
 
+        // Obtiene toda la fila del usuario incluyendo las columnas de fecha
+        public DataTable ObtenerDetallesCompletos(string dni)
+        {
+            DataTable dt = new DataTable();
+            string consulta = "SELECT * FROM Usuarios WHERE DNI = @dni";
+            using (SqlConnection cx = new SqlConnection(cadenaConexion))
+            {
+                cx.Open();
+                using (SqlCommand cmd = new SqlCommand(consulta, cx))
+                {
+                    cmd.Parameters.AddWithValue("@dni", dni);
+                    dt.Load(cmd.ExecuteReader());
+                }
+            }
+            return dt;
+        }
+
+        // Actualiza el estado y la fecha al mismo tiempo
+        public void ActualizarProgramaConFecha(string dni, string programa, string estado, DateTime fecha)
+        {
+            string colFecha = programa + "_Fecha";
+            string consulta = $"UPDATE Usuarios SET [{programa}] = @estado, [{colFecha}] = @fecha WHERE DNI = @dni";
+
+            using (SqlConnection cx = new SqlConnection(cadenaConexion))
+            {
+                cx.Open();
+                using (SqlCommand cmd = new SqlCommand(consulta, cx))
+                {
+                    cmd.Parameters.AddWithValue("@estado", string.IsNullOrEmpty(estado) ? (object)DBNull.Value : estado);
+                    cmd.Parameters.AddWithValue("@fecha", fecha);
+                    cmd.Parameters.AddWithValue("@dni", dni);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
 
 

@@ -3,6 +3,7 @@ using FormBaja.Datos;
 using FormBaja.Forms;
 using MaterialSkin.Controls;
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -33,8 +34,8 @@ namespace FormBaja
 
         public FormPrincipal()
         {
-           // [DEBUG] cronometro
-           //cronometroCarga = Stopwatch.StartNew();
+            // [DEBUG] cronometro
+            //cronometroCarga = Stopwatch.StartNew();
 
 
             InitializeComponent();
@@ -42,7 +43,7 @@ namespace FormBaja
             this.Opacity = 0;
 
             GestorTema.ConfigurarMaterialSkin(this); // APLICR TEMA
-            
+
 
             //----------------------------------------------------------------
             //  CODIGO PARA AGILIZAR LA CARGA DEL PROGRAMA
@@ -52,7 +53,7 @@ namespace FormBaja
 
             //----------------------------------------------------------------
 
-          
+
 
             ConfigurarTimerBusqueda(); // CONFIGURACION DEL TIMER   
 
@@ -61,9 +62,15 @@ namespace FormBaja
             // CENTRADO DE FORMULARIO PARAA EVITAR QUE TAPE LA BARRA DE WINDOWS Y SE PONGA EN PANTALLA MAXIMIZADA( NO COMPLETA)
             this.StartPosition = FormStartPosition.Manual;
             this.Bounds = Screen.PrimaryScreen.WorkingArea;
-            
 
+            DgvBajas.CellDoubleClick += (s, e) =>
+            {
+                if (e.RowIndex >= 0) AbrirDetallesUsuario();
+            };
         }
+
+
+            
 
         //--------------------------------------------------------------
         // CARGA DEL FORMULARIO DESPUES DE LA CREACION
@@ -212,10 +219,24 @@ namespace FormBaja
             // LE ASIGNAMOS EL METODO DE BORRAR
             itemBorrar.Click += (s, e) => BorrarFilaSeleccionada();
 
+
+            ToolStripMenuItem itemDetalles = new ToolStripMenuItem("Ver Detalles y Fechas");
+            itemDetalles.Click += (s, e) => AbrirDetallesUsuario();
+            menuContextual.Items.Insert(0, itemDetalles); // Lo ponemos el primero
             // SE AÑADE AL MENU
             menuContextual.Items.Add(itemBorrar);
         }
 
+        private void AbrirDetallesUsuario()
+        {
+            string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString();
+            FormDetallesUsuario frm = new FormDetallesUsuario(dni);
+            if (frm.ShowDialog() == DialogResult.OK)
+            {
+                accesoDatos.CargarDatos(DgvBajas);
+                ConfigurarGrid();
+            }
+        }
         //--------------------------------------------------------------
         // CONFIGURAR EL GRID
         //--------------------------------------------------------------
@@ -449,11 +470,12 @@ namespace FormBaja
 
         private void BtnExportar_Click(object sender, EventArgs e)
         {
-            string txtBusqueda = TxtBuscarDNIoNombre.Text.ToUpper().Trim();
             try
             {
-                // PASAMOS EL DATAGRIDVIEW AL METODO PARA EXPORTAR
-                accesoDatos.ExportarExcel(DgvBajas, txtBusqueda);
+                // En lugar de pasar el DataSource del Grid (que puede estar filtrado o incompleto),
+                // obtenemos todos los datos actuales de la BD para que incluyan las fechas.
+                DataTable dtCompleto = accesoDatos.LeerUsuarios();
+                accesoDatos.ExportarExcel(dtCompleto, "Listado_Completo_Con_Fechas");
             }
             catch (Exception ex)
             {
