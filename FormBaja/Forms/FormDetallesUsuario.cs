@@ -36,47 +36,46 @@ namespace FormBaja.Forms
 
         private void ConfigurarEstructuraBase()
         {
-            // 1. Creamos un panel para el "Footer" (área de botones)
+            // 1. Panel para el Footer (Área del botón)
             Panel panelFooter = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 60,
-                BackColor = Color.White
+                Height = 70,
+                BackColor = Color.FromArgb(245, 245, 245) // Gris muy claro para verlo
             };
 
-            // 2. Botón Guardar (más pequeño y a la derecha)
+            // 2. Botón Guardar (Anclado a la derecha del panel footer)
             MaterialButton btnGuardar = new MaterialButton
             {
                 Text = "GUARDAR CAMBIOS",
                 Type = MaterialButton.MaterialButtonType.Contained,
                 UseAccentColor = true,
-                // Lo posicionamos a la derecha
-                Location = new Point(this.Width - 180, 10),
-                Anchor = AnchorStyles.Right | AnchorStyles.Top,
-                Size = new Size(150, 40)
+                Size = new Size(160, 40),
+                // Lo posicionamos manualmente dentro del footer
+                Location = new Point(this.Width - 190, 15),
+                Anchor = AnchorStyles.Right | AnchorStyles.Top
             };
             btnGuardar.Click += (s, e) => GuardarCambios();
-
             panelFooter.Controls.Add(btnGuardar);
 
-            // 3. Panel con Scroll para el contenido
+            // 3. Panel Contenedor con Scroll
             panelContenedor = new FlowLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
                 FlowDirection = FlowDirection.TopDown,
                 WrapContents = false,
-                Padding = new Padding(20, 80, 20, 20), // 80px arriba para no chocar con el título azul
+                // Padding: 80 arriba para el título, 20 abajo para que no pegue al footer
+                Padding = new Padding(20, 80, 20, 20),
                 BackColor = Color.White
             };
 
-            // IMPORTANTE: Si limpiaste el diseñador, ya no necesitas el Controls.Clear()
-            // Añadimos los paneles al formulario
+            // ORDEN CRÍTICO DE ADICIÓN:
             this.Controls.Add(panelContenedor);
             this.Controls.Add(panelFooter);
 
-            // Esto asegura que el panel de scroll respete el espacio del footer
-            panelContenedor.BringToFront();
+            // ELFooter DEBE ESTAR AL FRENTE para que el Dock=Fill lo respete
+            panelFooter.BringToFront();
         }
 
         private void CargarDatosUsuario()
@@ -89,7 +88,7 @@ namespace FormBaja.Forms
 
             DataRow fila = datos.Rows[0];
 
-            // Encabezado con datos personales
+            // Datos del usuario
             AñadirEtiquetaInformativa("NOMBRE: " + fila["NOMBRE"].ToString());
             AñadirEtiquetaInformativa("APELLIDOS: " + fila["APELLIDOS"].ToString());
             panelContenedor.Controls.Add(new Label { Text = "________________________________", AutoSize = true, ForeColor = Color.Gray, Margin = new Padding(0, 0, 0, 20) });
@@ -97,23 +96,22 @@ namespace FormBaja.Forms
             foreach (DataColumn col in datos.Columns)
             {
                 string nombreCol = col.ColumnName;
-
                 if (nombreCol == "DNI" || nombreCol == "NOMBRE" || nombreCol == "APELLIDOS" || nombreCol.EndsWith("_Fecha"))
                     continue;
 
                 object valorFecha = datos.Columns.Contains(nombreCol + "_Fecha") ? fila[nombreCol + "_Fecha"] : DBNull.Value;
-
                 CrearFilaPrograma(nombreCol, fila[nombreCol]?.ToString(), valorFecha);
             }
 
-            // ESPACIADOR FINAL: Esto soluciona que el último programa se vea cortado
-            panelContenedor.Controls.Add(new Label { Text = "", Height = 50, Width = 10 });
+            // --- EL ESPACIADOR MÁGICO ---
+            // Añade un Label vacío de 40px de alto para asegurar que el scroll baje del todo
+            panelContenedor.Controls.Add(new Label { Text = "", Height = 40, Width = 10 });
         }
 
         private void CrearFilaPrograma(string programa, string estadoActual, object fechaActual)
         {
-            // Panel de la fila (ajustamos el ancho a 700 para dar aire)
-            Panel fila = new Panel { Width = 700, Height = 100, Margin = new Padding(0, 10, 0, 0) };
+            // Bajamos el ancho a 650 o 680 para asegurar que el scroll no tape el DatePicker
+            Panel fila = new Panel { Width = 650, Height = 100, Margin = new Padding(0, 10, 0, 0) };
 
             Label lblProg = new Label
             {
@@ -128,7 +126,7 @@ namespace FormBaja.Forms
                 Top = 35,
                 Width = 150,
                 FlatStyle = FlatStyle.Flat,
-                DropDownStyle = ComboBoxStyle.DropDownList
+                DropDownStyle = ComboBoxStyle.DropDownList // Evita que escriban cosas raras
             };
             cbEstado.Items.AddRange(new object[] { "", "ACTIVO", "INACTIVO" });
             cbEstado.Text = estadoActual;
