@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace FormBaja.Forms
 {
-    public partial class FormDetallesUsuario : MaterialForm
+    public partial class FormDetallesUsuario : Form
     {
         private string _dni;
         private AccesoDatos _accesoDatos = new AccesoDatos();
@@ -27,7 +27,7 @@ namespace FormBaja.Forms
         {
             _dni = dni;
             InitializeComponent();
-            GestorTema.ConfigurarMaterialSkin(this);
+            
             this.Text = "SEGUIMIENTO - DNI: " + _dni;
 
             ConfigurarEstructuraBase();
@@ -45,15 +45,12 @@ namespace FormBaja.Forms
             };
 
             // 2. Botón Guardar (Anclado a la derecha del panel footer)
-            MaterialButton btnGuardar = new MaterialButton
+            Button btnGuardar = new Button
             {
                 Text = "GUARDAR CAMBIOS",
-                Type = MaterialButton.MaterialButtonType.Contained,
-                UseAccentColor = true,
-                Size = new Size(160, 40),
-                // Lo posicionamos manualmente dentro del footer
-                Location = new Point(this.Width - 190, 15),
-                Anchor = AnchorStyles.Right | AnchorStyles.Top
+                Height = 40,
+                Width = 150,
+                Dock = DockStyle.Right
             };
             btnGuardar.Click += (s, e) => GuardarCambios();
             panelFooter.Controls.Add(btnGuardar);
@@ -66,7 +63,7 @@ namespace FormBaja.Forms
                 FlowDirection = FlowDirection.TopDown,
                 WrapContents = false,
                 // Padding: 80 arriba para el título, 20 abajo para que no pegue al footer
-                Padding = new Padding(20, 80, 20, 20),
+                Padding = new Padding(20, 20, 20, 20),
                 BackColor = Color.White
             };
 
