@@ -142,6 +142,11 @@ namespace FormBaja
             {
                 string nombreColumna = DgvBajas.Columns[i].Name;
 
+                if (nombreColumna.EndsWith("_Fecha"))
+                {
+                    DgvBajas.Columns[i].Visible = false;
+                    continue;
+                } 
                 // CREAMOS LA NUEVA COLUMNA CON EL NOMBRE DEL PROGRAMA Y LOS ESTILOS
                 DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn
                 {

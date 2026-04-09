@@ -241,40 +241,137 @@ namespace FormBaja.Datos
 
         }
 
-        // METODOS PARA EL FORM DETALLES FECHA
+        // METODOS PARA EL FORM DETALLES FECHA---------------------------
 
-        // Obtiene toda la fila del usuario incluyendo las columnas de fecha
+        // MÉTODO PARA REPARAR LA ESTRUCTURA DE LA TABLA AUTOMÁTICAMENTE
+        private void SincronizarColumnasDeFecha(SqlConnection conexion)
+        {
+            // 1. Obtenemos todas las columnas de la tabla Usuarios
+            DataTable esquema = conexion.GetSchema("Columns", new[] { null, null, "Usuarios" });
+
+            // 2. Metemos los nombres en una lista para buscar más rápido
+            var nombresColumnas = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (DataRow fila in esquema.Rows)
+            {
+                nombresColumnas.Add(fila["COLUMN_NAME"].ToString());
+            }
+
+            // 3. Revisamos cada columna para ver si es un programa que necesita su _Fecha
+            foreach (string col in nombresColumnas)
+            {
+                // Si no es una columna fija y no es ya una columna de fecha
+                if (col != "DNI" && col != "NOMBRE" && col != "APELLIDOS" && !col.EndsWith("_Fecha"))
+                {
+                    string colFecha = col + "_Fecha";
+
+                    // Si el programa existe pero su columna de fecha no, la creamos
+                    if (!nombresColumnas.Contains(colFecha))
+                    {
+                        string sqlAlter = $"ALTER TABLE Usuarios ADD [{colFecha}] DATETIME NULL";
+                        using (SqlCommand cmd = new SqlCommand(sqlAlter, conexion))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+        }
+
+        // ACTUALIZACIÓN DEL MÉTODO DE LECTURA
+        // MÉTODO PARA OBTENER DETALLES Y REPARAR COLUMNAS FALTANTES
+        // MÉTODO ACTUALIZADO: REPARA LA TABLA Y OBTIENE LOS DATOS
         public DataTable ObtenerDetallesCompletos(string dni)
         {
-            DataTable dt = new DataTable();
-            string consulta = "SELECT * FROM Usuarios WHERE DNI = @dni";
             using (SqlConnection cx = new SqlConnection(cadenaConexion))
             {
                 cx.Open();
+
+                // 1. REPARACIÓN AUTOMÁTICA DE LA BASE DE DATOS
+                // Obtenemos qué columnas existen actualmente en la tabla Usuarios
+                DataTable esquema = cx.GetSchema("Columns", new[] { null, null, "Usuarios" });
+                var columnasExistentes = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (DataRow col in esquema.Rows) columnasExistentes.Add(col["COLUMN_NAME"].ToString());
+
+                // Buscamos programas que no tengan su columna _Fecha
+                foreach (string colName in columnasExistentes)
+                {
+                    if (colName != "DNI" && colName != "NOMBRE" && colName != "APELLIDOS" && !colName.EndsWith("_Fecha"))
+                    {
+                        string colFecha = colName + "_Fecha";
+                        if (!columnasExistentes.Contains(colFecha))
+                        {
+                            // Si el programa existe pero la fecha no, la creamos en SQL automáticamente
+                            string sqlAlter = $"ALTER TABLE Usuarios ADD [{colFecha}] DATETIME NULL";
+                            using (SqlCommand cmdAlter = new SqlCommand(sqlAlter, cx))
+                            {
+                                cmdAlter.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+
+                // 2. CARGA DE DATOS NORMAL
+                DataTable dt = new DataTable();
+                string consulta = "SELECT * FROM Usuarios WHERE DNI = @dni";
                 using (SqlCommand cmd = new SqlCommand(consulta, cx))
                 {
                     cmd.Parameters.AddWithValue("@dni", dni);
                     dt.Load(cmd.ExecuteReader());
                 }
+                return dt;
             }
-            return dt;
         }
 
         // Actualiza el estado y la fecha al mismo tiempo
         public void ActualizarProgramaConFecha(string dni, string programa, string estado, DateTime fecha)
         {
-            string colFecha = programa + "_Fecha";
-            string consulta = $"UPDATE Usuarios SET [{programa}] = @estado, [{colFecha}] = @fecha WHERE DNI = @dni";
-
             using (SqlConnection cx = new SqlConnection(cadenaConexion))
             {
-                cx.Open();
-                using (SqlCommand cmd = new SqlCommand(consulta, cx))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@estado", string.IsNullOrEmpty(estado) ? (object)DBNull.Value : estado);
-                    cmd.Parameters.AddWithValue("@fecha", fecha);
-                    cmd.Parameters.AddWithValue("@dni", dni);
-                    cmd.ExecuteNonQuery();
+                    cx.Open();
+
+                    // 1. COMPROBACIÓN DE SEGURIDAD: ¿Existe la columna de fecha en SQL Server?
+                    string colFecha = programa + "_Fecha";
+                    string checkSql = $@"IF EXISTS (SELECT * FROM sys.columns 
+                                         WHERE Name = '{colFecha}' AND Object_ID = Object_ID('Usuarios'))
+                                         SELECT 1 ELSE SELECT 0";
+
+                    bool tieneColumnaFecha;
+                    using (SqlCommand cmdCheck = new SqlCommand(checkSql, cx))
+                    {
+                        tieneColumnaFecha = (int)cmdCheck.ExecuteScalar() == 1;
+                    }
+
+                    // 2. CONSTRUIMOS LA CONSULTA DEPENDIENDO DE SI EXISTE LA COLUMNA
+                    string consulta;
+                    if (tieneColumnaFecha)
+                    {
+                        consulta = $"UPDATE Usuarios SET [{programa}] = @estado, [{colFecha}] = @fecha WHERE DNI = @dni";
+                    }
+                    else
+                    {
+                        // Si el programa es antiguo y no tiene columna fecha, solo actualizamos el estado
+                        consulta = $"UPDATE Usuarios SET [{programa}] = @estado WHERE DNI = @dni";
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand(consulta, cx))
+                    {
+                        cmd.Parameters.AddWithValue("@estado", string.IsNullOrEmpty(estado) ? (object)DBNull.Value : estado);
+                        cmd.Parameters.AddWithValue("@dni", dni);
+
+                        // Solo añadimos el parámetro de fecha si la columna existe
+                        if (tieneColumnaFecha)
+                        {
+                            cmd.Parameters.AddWithValue("@fecha", fecha);
+                        }
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar programa y fecha: " + ex.Message);
                 }
             }
         }
@@ -321,38 +418,37 @@ namespace FormBaja.Datos
         }
 
         // EXPORTAR A EXCEL
-        public void ExportarExcel(DataGridView dgv, string txtBusqueda)
+        // EXPORTAR A EXCEL (ACTUALIZADO PARA RECIBIR DATATABLE)
+        public void ExportarExcel(DataTable dt, string nombreArchivo)
         {
-            // VERIFICA QUE HAY DATOS EN EL DATAGRIDVIEW
-            if (dgv.DataSource == null || !(dgv.DataSource is DataTable dt))
+            // VERIFICA QUE HAYA DATOS
+            if (dt == null || dt.Rows.Count == 0)
             {
                 MessageBox.Show("No hay datos disponibles para exportar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // CUADRO DE WINDOW PARA GUARDAR EL ARCHIVO
+            // CUADRO DE DIALOGO PARA GUARDAR EL ARCHIVO
             SaveFileDialog sfd = new SaveFileDialog
             {
                 Filter = "Excel Workbook|*.xlsx",
                 Title = "Exportar datos a Excel",
-                FileName = "Listado_Bajas_" + txtBusqueda + "_" + DateTime.Now.ToString("yyyyMMddHHmmss")
+                FileName = nombreArchivo + "_" + DateTime.Now.ToString("yyyyMMddHHmmss")
             };
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    
                     using (XLWorkbook wb = new XLWorkbook())
                     {
-                        // AÑADE UNA HOJA CON LOS DATOS DEL DATAGRIDVIEW
-                        
+                        // AÑADIMOS LA HOJA CON LOS DATOS COMPLETOS
                         var ws = wb.Worksheets.Add(dt, "Usuarios");
 
                         // AJUSTAMOS EL ANCHO DE LAS COLUMNAS
                         ws.Columns().AdjustToContents();
 
-                        // GUARDADON DEL ARCHIVO
+                        // GUARDAMOS EL ARCHIVO
                         wb.SaveAs(sfd.FileName);
                         MessageBox.Show("Datos exportados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }

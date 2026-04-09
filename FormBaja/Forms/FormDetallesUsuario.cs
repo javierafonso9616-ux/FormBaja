@@ -62,26 +62,38 @@ namespace FormBaja.Forms
 
         private void CargarDatosUsuario()
         {
+            // Limpiamos antes de cargar por si acaso
+            panelContenedor.Controls.Clear();
+            controlesProgramas.Clear();
+
+            // Obtenemos los datos (que ahora ya vendrán con las columnas creadas)
             DataTable datos = _accesoDatos.ObtenerDetallesCompletos(_dni);
             if (datos.Rows.Count == 0) return;
 
             DataRow fila = datos.Rows[0];
 
-            // 1. Mostrar Datos Básicos
+            // 1. Datos del Usuario
             AñadirEtiquetaInformativa("NOMBRE: " + fila["NOMBRE"].ToString());
             AñadirEtiquetaInformativa("APELLIDOS: " + fila["APELLIDOS"].ToString());
-            panelContenedor.Controls.Add(new Label { Text = "________________________________", AutoSize = true, ForeColor = Color.Gray });
+
+            // Separador visual
+            Label separador = new Label { Text = "________________________________", AutoSize = true, ForeColor = Color.Gray, Margin = new Padding(0, 0, 0, 20) };
+            panelContenedor.Controls.Add(separador);
 
             // 2. Generar controles para cada programa de forma dinámica
             foreach (DataColumn col in datos.Columns)
             {
                 string nombreCol = col.ColumnName;
 
-                // Saltamos las columnas fijas y las de fecha
+                // Saltamos las columnas que no son programas
                 if (nombreCol == "DNI" || nombreCol == "NOMBRE" || nombreCol == "APELLIDOS" || nombreCol.EndsWith("_Fecha"))
                     continue;
 
-                CrearFilaPrograma(nombreCol, fila[nombreCol]?.ToString(), fila[nombreCol + "_Fecha"]);
+                // Leemos el valor de la fecha de forma segura
+                object valorFecha = datos.Columns.Contains(nombreCol + "_Fecha") ? fila[nombreCol + "_Fecha"] : DBNull.Value;
+
+                // Creamos la fila en el panel
+                CrearFilaPrograma(nombreCol, fila[nombreCol]?.ToString(), valorFecha);
             }
         }
 
