@@ -59,14 +59,16 @@ namespace FormBaja
 
             ConfigurarMenuContextual(); // CONFIGURACION DEL MENU
 
-            // CENTRADO DE FORMULARIO PARAA EVITAR QUE TAPE LA BARRA DE WINDOWS Y SE PONGA EN PANTALLA MAXIMIZADA( NO COMPLETA)
+            // CENTRADO DE FORMULARIO PARAA EVITAR QUE TAPE LA BARRA DE WINDOWS Y SE PONGA EN PANTALLA MAXIMIZADA(NO COMPLETA)
             this.StartPosition = FormStartPosition.Manual;
             this.Bounds = Screen.PrimaryScreen.WorkingArea;
 
+            // CONFIGURACION DE EVENTO PARA ABRIR LOS DETALLES DEL USUARIO CON DOBLE CLICK
             DgvBajas.CellDoubleClick += (s, e) =>
             {
                 if (e.RowIndex >= 0) AbrirDetallesUsuario();
             };
+
         }
 
 
@@ -104,6 +106,7 @@ namespace FormBaja
                 return cp;
             }
         }
+
         //--------------------------------------------------------------
         // METODOS
         //--------------------------------------------------------------
@@ -134,10 +137,10 @@ namespace FormBaja
         }
 
         private void ConvertirCeldasEnDesplegables() {
-            
+
             // RECORREMOS LAS COLUMNAS DESDE EL INDICE 3 EN ADELANTE
             // (EL INDICE 0 ES DNI, EL INDICE 1 ES NOMBRE, EL INDICE 2 ES APELLIDOS)
-            
+
             for (int i = 3; i < DgvBajas.Columns.Count; i++)
             {
                 string nombreColumna = DgvBajas.Columns[i].Name;
@@ -146,15 +149,16 @@ namespace FormBaja
                 {
                     DgvBajas.Columns[i].Visible = false;
                     continue;
-                } 
+                }
                 // CREAMOS LA NUEVA COLUMNA CON EL NOMBRE DEL PROGRAMA Y LOS ESTILOS
                 DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn
                 {
                     Name = nombreColumna,
                     HeaderText = nombreColumna,
-                    DataPropertyName = nombreColumna, 
-                    FlatStyle = FlatStyle.Flat,                   
+                    DataPropertyName = nombreColumna,
+                    FlatStyle = FlatStyle.Flat,
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox,
+
                 };
 
                 // COLORES DE LAS CELDAS DESPLEGABLE
@@ -162,12 +166,19 @@ namespace FormBaja
                 comboCol.DefaultCellStyle.ForeColor = Color.Black;
                 comboCol.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
 
+                comboCol.ReadOnly = true;
+
+               
 
                 // OPCIONES DEL DESPLEGABLE
                 comboCol.Items.Add("");
                 comboCol.Items.Add("ACTIVO");
                 comboCol.Items.Add("INACTIVO");
-                                    
+
+                if (comboCol.Name.StartsWith("ACTIVO"))
+                { comboCol.DefaultCellStyle.ForeColor = Color.LightGreen; }
+                else if (comboCol.Name.StartsWith("INACTIVO"))
+                { comboCol.DefaultCellStyle.ForeColor = Color.LightCoral; }
 
                 // REEMPLAZAMOS LA COLUMNA POR LA NUEVA CON DESPLEGABLE
                 DgvBajas.Columns.RemoveAt(i);
@@ -224,19 +235,27 @@ namespace FormBaja
             // LE ASIGNAMOS EL METODO DE BORRAR
             itemBorrar.Click += (s, e) => BorrarFilaSeleccionada();
 
+            // CREAMOS EL ITEM DE ABRIR DETALLES
+            ToolStripMenuItem itemDetalles = new ToolStripMenuItem("Ver Detalles y Fechas") 
+            { 
+                Image = SystemIcons.Information.ToBitmap()
+            };
 
-            ToolStripMenuItem itemDetalles = new ToolStripMenuItem("Ver Detalles y Fechas");
+            // LE ASIGNAMOS EL METODO DE ABRIR DETALLES
             itemDetalles.Click += (s, e) => AbrirDetallesUsuario();
-            menuContextual.Items.Insert(0, itemDetalles); // Lo ponemos el primero
+
             // SE AÑADE AL MENU
+            menuContextual.Items.Insert(0, itemDetalles); // PRIMER ITEM
             menuContextual.Items.Add(itemBorrar);
         }
 
         private void AbrirDetallesUsuario()
         {
+            // OBTENEMOS EL DNI DE LA FILA SELECCIONADA PARA PASARLO AL CONSTRUCTOR DEL FORMULARIO DETALLES
             string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString().Trim();
-            FormDetallesUsuario frm = new FormDetallesUsuario(dni);
-            if (frm.ShowDialog() == DialogResult.OK)
+
+            FormDetallesUsuario Formdetalles = new FormDetallesUsuario(dni);
+            if (Formdetalles.ShowDialog() == DialogResult.OK)
             {
                 accesoDatos.CargarDatos(DgvBajas);
                 ConfigurarGrid();
@@ -325,6 +344,9 @@ namespace FormBaja
                 DgvBajas.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
 
+            
+            
+
             DgvBajas.ResumeLayout(); // PARTE DEL AGILIZAMIENTO DEL PROGRAMA
         }
 
@@ -335,11 +357,12 @@ namespace FormBaja
         // EVENTO PARA QUE LOS DESPLEGABLES FUNCIONEN CON UN CLICK EN LUGAR DE DOS POR DEFECTO
         private void DgvBajas_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (DgvBajas.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn && e.RowIndex != -1)
+           /* if (DgvBajas.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn && e.RowIndex != -1)
             {
                 DgvBajas.BeginEdit(true);
                 ((ComboBox)DgvBajas.EditingControl).DroppedDown = true;
             }
+           */
         }
 
         // EVENTO PARA FORZAR AL GRID A "CONFIRMAR" LOS CAMBIOS AL ELEGIR UNA OPCION
@@ -445,7 +468,6 @@ namespace FormBaja
         }
 
         
-
         //--------------------------------------------------------------
         // BOTONES
         //--------------------------------------------------------------

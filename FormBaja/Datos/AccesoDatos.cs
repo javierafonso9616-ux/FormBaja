@@ -241,6 +241,7 @@ namespace FormBaja.Datos
 
         }
 
+
         // METODOS PARA EL FORM DETALLES FECHA---------------------------
 
         // MÉTODO PARA REPARAR LA ESTRUCTURA DE LA TABLA AUTOMÁTICAMENTE
@@ -279,7 +280,7 @@ namespace FormBaja.Datos
 
         // ACTUALIZACIÓN DEL MÉTODO DE LECTURA
         // MÉTODO PARA OBTENER DETALLES Y REPARAR COLUMNAS FALTANTES
-        // MÉTODO ACTUALIZADO: REPARA LA TABLA Y OBTIENE LOS DATOS
+        // REPARA LA TABLA Y OBTIENE LOS DATOS
         public DataTable ObtenerDetallesCompletos(string dni)
         {
             using (SqlConnection cx = new SqlConnection(cadenaConexion))
@@ -370,6 +371,7 @@ namespace FormBaja.Datos
             }
         }
 
+        //------------------------------------------------------------------------
 
 
         //------------------------------------------------------------------------
