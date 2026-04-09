@@ -453,6 +453,33 @@ namespace FormBaja
             }
         }
 
+        // EVENTO QUE CAMBIA EL COLOR DE LAS CELDAS
+        private void DgvBajas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Solo aplicamos a las columnas de programas (índice 3 en adelante)
+            if (e.RowIndex < 0 || e.ColumnIndex < 3) return;
+
+            if (e.Value != null)
+            {
+                string valor = e.Value.ToString();
+                if (valor == "ACTIVO")
+                {
+                    e.CellStyle.ForeColor = Color.Green;
+                    //e.CellStyle.SelectionForeColor = Color.Green; // Color cuando la fila está seleccionada
+                }
+                else if (valor == "INACTIVO")
+                {
+                    e.CellStyle.ForeColor = Color.Red;
+                    //e.CellStyle.SelectionForeColor = Color.Red;
+                }
+                else if (valor == "")
+                {
+                    e.CellStyle.BackColor = Color.LightGray;
+                
+                }
+            }
+        }
+
         //--------------------------------------------------------------
         // EVENTOS DEL TEXTBOX 
         //--------------------------------------------------------------
@@ -532,6 +559,6 @@ namespace FormBaja
             ConfigurarGrid();
         }
 
-        
+       
     }
 }

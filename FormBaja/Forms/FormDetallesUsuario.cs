@@ -114,7 +114,7 @@ namespace FormBaja.Forms
             Label lblProg = new Label
             {
                 Text = programa.ToUpper(),
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 Top = 5,
                 Width = 600
             };
@@ -123,13 +123,13 @@ namespace FormBaja.Forms
             {
                 Top = 35,
                 Width = 150,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.Standard,
                 DropDownStyle = ComboBoxStyle.DropDownList // Evita que escriban cosas raras
             };
             cbEstado.Items.AddRange(new object[] { "", "ACTIVO", "INACTIVO" });
             cbEstado.Text = estadoActual;
 
-            Label lblFecha = new Label { Text = "Fecha de cambio:", Top = 70, Left = 0, Width = 120 };
+            Label lblFecha = new Label { Text = "Fecha:", Top = 70, Left = 0, Width = 120, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
             DateTimePicker dtp = new DateTimePicker
             {
                 Top = 68,
