@@ -102,7 +102,7 @@
             this.materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             this.materialButton1.UseAccentColor = false;
             this.materialButton1.UseVisualStyleBackColor = true;
-            this.materialButton1.Click += new System.EventHandler(this.MaterialButton1_Click);
+            //this.materialButton1.Click += new System.EventHandler(this.MaterialButton1_Click);
             // 
             // pictureBox1
             // 
@@ -215,7 +215,7 @@
             this.DgvBajas.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvBajas_CellFormatting);
             this.DgvBajas.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DgvBajas_CellMouseDown);
             this.DgvBajas.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBajas_CellValueChanged);
-            this.DgvBajas.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvBajas_CurrentCellDirtyStateChanged);
+           // this.DgvBajas.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvBajas_CurrentCellDirtyStateChanged);
             // 
             // FormPrincipal
             // 

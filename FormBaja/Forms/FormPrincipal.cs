@@ -56,16 +56,56 @@ namespace FormBaja
             }
         }
 
-        private void ConfigurarTimerBusqueda()
+        private void ConfigurarGrid()
         {
-            timerBusqueda = new Timer { Interval = 500 };
-            timerBusqueda.Tick += BusquedaDelay;
-        }
+            DgvBajas.SuspendLayout();
 
-        private void BusquedaDelay(object sender, EventArgs e)
-        {
-            timerBusqueda.Stop();
-            accesoDatos.BuscarUsuario(DgvBajas, TxtBuscarDNIoNombre.Text.ToUpper().Trim());
+            // 1. Permitimos edición general para DNI, Nombre y Apellidos
+            DgvBajas.ReadOnly = false;
+
+            ConvertirCeldasEnDesplegables();
+
+            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            for (int i = 0; i < DgvBajas.Columns.Count; i++)
+            {
+                int anchoCalculado = DgvBajas.Columns[i].Width;
+                DgvBajas.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                DgvBajas.Columns[i].Width = anchoCalculado;
+
+                // Bloqueamos explícitamente las columnas de programas (índice 3 en adelante)
+                if (i >= 3) DgvBajas.Columns[i].ReadOnly = true;
+            }
+
+            if (DgvBajas.Columns.Count > 2)
+            {
+                DgvBajas.Columns[1].Width = 100;
+                DgvBajas.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                DgvBajas.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                DgvBajas.Columns[2].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            }
+
+            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            DgvBajas.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            DgvBajas.AllowUserToResizeRows = false;
+            DgvBajas.RowHeadersVisible = false;
+
+            DgvBajas.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
+            DgvBajas.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
+
+            DgvBajas.BackgroundColor = Color.White;
+            DgvBajas.GridColor = Color.FromArgb(230, 230, 230);
+            DgvBajas.EnableHeadersVisualStyles = false;
+            DgvBajas.ColumnHeadersHeight = 60;
+            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243);
+            DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            DgvBajas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+
+            // fuente especial para el dni
+            DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            DgvBajas.ResumeLayout();
         }
 
         private void ConvertirCeldasEnDesplegables()
@@ -73,12 +113,12 @@ namespace FormBaja
             for (int i = 3; i < DgvBajas.Columns.Count; i++)
             {
                 string nom = DgvBajas.Columns[i].Name;
-                // OCULTAMOS LA COLUMNA DE FECHA GLOBAL Y LAS ANTIGUAS
                 if (nom == "Fecha" || nom.EndsWith("_Fecha"))
                 {
                     DgvBajas.Columns[i].Visible = false;
                     continue;
                 }
+
                 DataGridViewComboBoxColumn comboCol = new DataGridViewComboBoxColumn
                 {
                     Name = nom,
@@ -86,50 +126,59 @@ namespace FormBaja
                     DataPropertyName = nom,
                     FlatStyle = FlatStyle.Flat,
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox,
+                    ReadOnly = true // BLOQUEO INDIVIDUAL
                 };
-                comboCol.DefaultCellStyle.BackColor = Color.White;
-                comboCol.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
-                comboCol.Items.AddRange("", "ACTIVO", "INACTIVO");
 
+                comboCol.Items.AddRange("", "ACTIVO", "INACTIVO");
                 DgvBajas.Columns.RemoveAt(i);
                 DgvBajas.Columns.Insert(i, comboCol);
             }
         }
 
-        private void BorrarFilaSeleccionada()
+        // --- EL BLOQUEO DEFINITIVO ESTÁ AQUÍ ---
+        private void DgvBajas_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            if (DgvBajas.SelectedRows.Count > 0)
+            // Si el usuario intenta editar columnas de programas (3 en adelante), cancelamos
+            if (e.ColumnIndex >= 3)
             {
-                string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString();
-                if (MessageBox.Show("¿Borrar registro?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    accesoDatos.BorrarRegistro(dni);
-                    accesoDatos.CargarDatos(DgvBajas);
-                    ConfigurarGrid();
-                }
+                e.Cancel = true;
+                return;
             }
+
+            // Si es la columna DNI (0), guardamos el valor original para la actualización
+            if (e.ColumnIndex == 0 && DgvBajas.Rows[e.RowIndex].Cells[0].Value != null)
+                dniOriginal = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString().ToUpper().Trim();
         }
 
-        private void ConfigurarMenuContextual()
+        private void DgvBajas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            menuContextual = new ContextMenuStrip();
-            ToolStripMenuItem itemDetalles = new ToolStripMenuItem("Ver Detalles");
-            itemDetalles.Click += (s, e) => AbrirDetallesUsuario();
-            ToolStripMenuItem itemBorrar = new ToolStripMenuItem("Borrar");
-            itemBorrar.Click += (s, e) => BorrarFilaSeleccionada();
-            menuContextual.Items.Add(itemDetalles);
-            menuContextual.Items.Add(itemBorrar);
+            if (e.RowIndex < 0 || esCargaInterna) return;
+            try
+            {
+                esCargaInterna = true;
+                string dniActual = DgvBajas.Rows[e.RowIndex].Cells[0].Value?.ToString().Trim().ToUpper();
+
+                if (e.ColumnIndex == 0)
+                    accesoDatos.ActualizarDniUsuario(dniOriginal, dniActual);
+                else if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
+                    accesoDatos.ActualizarDatosUsuarios(dniActual, DgvBajas.Rows[e.RowIndex].Cells[1].Value?.ToString().ToUpper().Trim(), DgvBajas.Rows[e.RowIndex].Cells[2].Value?.ToString().ToUpper().Trim());
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            finally { esCargaInterna = false;
+
+                accesoDatos.CargarDatos(DgvBajas);
+                ConfigurarGrid();
+            }
         }
 
         private void AbrirDetallesUsuario()
         {
             if (DgvBajas.SelectedRows.Count > 0)
             {
-                string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString().Trim();
-                string nombre = DgvBajas.SelectedRows[0].Cells[1].Value.ToString().Trim();
-                string apellido = DgvBajas.SelectedRows[0].Cells[2].Value.ToString().Trim();
-
-                if (new FormDetallesUsuario(dni, nombre,apellido ).ShowDialog() == DialogResult.OK)
+                string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString().Trim().ToUpper();
+                string nombre = DgvBajas.SelectedRows[0].Cells[1].Value.ToString().Trim().ToUpper();
+                string apellido = DgvBajas.SelectedRows[0].Cells[2].Value.ToString().Trim().ToUpper();
+                if (new FormDetallesUsuario(dni, nombre, apellido).ShowDialog() == DialogResult.OK)
                 {
                     accesoDatos.CargarDatos(DgvBajas);
                     ConfigurarGrid();
@@ -137,110 +186,46 @@ namespace FormBaja
             }
         }
 
-        private void ConfigurarGrid()
-        {
-            DgvBajas.SuspendLayout();// PARTE DEL AGILIZAMIENTO DEL PROGRAMA
-
-            // CONVERTISMOS LAS CELDAS EN DESPLEGABLES
-            ConvertirCeldasEnDesplegables();
-
-            // ACTIVAMOS EL MODO AUTOMÁTICO TEMPORALMENTE PARA QUE CÁLCULE EL TAMAÑO IDEAL
-            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // *ANTES TENIA ALLCELLS*
-
-            // BLOQUEO DE COLUMNAS: RECORREMOS LAS COLUMNAS PARA FIJAR SU TAMAÑO ACTUAL
-            // ESTO EVITA QUE AL ORDENAR O RECARGAR SE VUELVA A MOVER
-
-            for (int i = 0; i < DgvBajas.Columns.Count; i++)
-            {
-                int anchoCalculado = DgvBajas.Columns[i].Width;
-                DgvBajas.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None; // BLOQUEO DE MODO AUTO
-                DgvBajas.Columns[i].Width = anchoCalculado;
-            }
-
-            // CONFIGURACIÓN ESPECIAL PARA NOMBRE Y APELLIDOS (SALTOS DE LÍNEA)
-            if (DgvBajas.Columns.Count > 2)
-            {
-                // NOMBRE: FIJAMOS UN ANCHO PARA EL WRAP
-                DgvBajas.Columns[1].Width = 100;
-                DgvBajas.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-
-                // APELLIDOS: ESTE ES EL QUE RELLENA EL HUECO (MODO FILL)
-
-                DgvBajas.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                DgvBajas.Columns[2].Width = 100;
-                DgvBajas.Columns[2].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-                
-            }
-
-            // APAGAMOS EL MODO AUTOMÁTICO GLOBAL (PARA QUE NO CAMBIE AL ORDENAR)
-            DgvBajas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-
-            // PERMITIR QUE LAS FILAS CREZCAN PARA EL SALTO DE LINEA
-            DgvBajas.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-            // BLOQUEO DE REDIMENSIONAR FILAS
-            DgvBajas.AllowUserToResizeRows = false;
-            DgvBajas.RowHeadersVisible = false;
-            DgvBajas.ReadOnly = true;
-            // ESTILOS VISUALES Y COLORES
-            DgvBajas.BackgroundColor = Color.White;
-            DgvBajas.BorderStyle = BorderStyle.None;
-            DgvBajas.GridColor = Color.FromArgb(230, 230, 230);
-            DgvBajas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DgvBajas.MultiSelect = false;
-
-            // CONFIGURACION DE ESTILOS DE CABECERA
-            DgvBajas.EnableHeadersVisualStyles = false;
-            DgvBajas.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            DgvBajas.ColumnHeadersHeight = 60;
-            DgvBajas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 150, 243);
-            DgvBajas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            DgvBajas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            DgvBajas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-
-
-
-            // ALTERNADO DE COLORES DE FILAS
-            DgvBajas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
-            DgvBajas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
-            DgvBajas.DefaultCellStyle.SelectionForeColor = Color.Black;
-
-            // ALINEAMIENTO DE TEXTO DE LAS CELDAS
-            DgvBajas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            DgvBajas.DefaultCellStyle.Font = new Font("Segoe UI", 9);
-
-            // CONFIGURACIÓN ESPECIAL PARA EL DNI
-            if (DgvBajas.Columns.Count > 0)
-            {
-                DgvBajas.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-                DgvBajas.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            }
-
-
-
-
-            DgvBajas.ResumeLayout(); // PARTE DEL AGILIZAMIENTO DEL PROGRAMA
-        }
-
-
         private void DgvBajas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 3) return;
             if (e.Value != null)
             {
-                string valor = e.Value.ToString();
-                if (valor == "ACTIVO") e.CellStyle.ForeColor = Color.Green;
-                else if (valor == "INACTIVO") e.CellStyle.ForeColor = Color.Red;
-                else if (valor == "") e.CellStyle.BackColor = Color.LightGray;
+                string v = e.Value.ToString().ToUpper().Trim();
+                if (v == "ACTIVO") e.CellStyle.ForeColor = Color.Green;
+                else if (v == "INACTIVO") e.CellStyle.ForeColor = Color.Red;
             }
         }
 
-        private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e) { timerBusqueda.Stop(); timerBusqueda.Start(); }
-        private void BtnNuevoUsuario_Click(object sender, EventArgs e) { new FormNuevoUsuario().ShowDialog(); accesoDatos.CargarDatos(DgvBajas); ConfigurarGrid(); }
-        private void BtnNuevoPrograma_Click(object sender, EventArgs e) { new FormNuevoPrograma().ShowDialog(); accesoDatos.CargarDatos(DgvBajas); ConfigurarGrid(); }
-        private void BtnExportar_Click(object sender, EventArgs e) => accesoDatos.ExportarExcel(accesoDatos.LeerUsuarios(), "Baja_Servicios_Usuarios");
-        private void PictureBox1_Click(object sender, EventArgs e) => Process.Start("https://hospitalcrgijon.com/");
+        private void ConfigurarTimerBusqueda()
+        {
+            timerBusqueda = new Timer { Interval = 500 };
+            timerBusqueda.Tick += (s, e) => {
+                timerBusqueda.Stop();
+                accesoDatos.BuscarUsuario(DgvBajas, TxtBuscarDNIoNombre.Text.ToUpper().Trim());
+            };
+        }
+
+        private void ConfigurarMenuContextual()
+        {
+            menuContextual = new ContextMenuStrip();
+            ToolStripMenuItem det = new ToolStripMenuItem("Ver Detalles");
+            det.Click += (s, e) => AbrirDetallesUsuario();
+            ToolStripMenuItem bor = new ToolStripMenuItem("Borrar");
+            bor.Click += (s, e) => {
+                if (DgvBajas.SelectedRows.Count > 0)
+                {
+                    string dni = DgvBajas.SelectedRows[0].Cells[0].Value.ToString().ToUpper().Trim();
+                    if (MessageBox.Show("¿Borrar?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        accesoDatos.BorrarRegistro(dni);
+                        accesoDatos.CargarDatos(DgvBajas);
+                        ConfigurarGrid();
+                    }
+                }
+            };
+            menuContextual.Items.Add(det); menuContextual.Items.Add(bor);
+        }
 
         private void DgvBajas_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -251,32 +236,10 @@ namespace FormBaja
             }
         }
 
-        private void DgvBajas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || esCargaInterna) return;
-            try
-            {
-                esCargaInterna = true;
-                string dni = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
-                if (e.ColumnIndex == 0) accesoDatos.ActualizarDniUsuario(dniOriginal, dni);
-                else if (e.ColumnIndex == 1 || e.ColumnIndex == 2) accesoDatos.ActualizarDatosUsuarios(dni, DgvBajas.Rows[e.RowIndex].Cells[1].Value?.ToString(), DgvBajas.Rows[e.RowIndex].Cells[2].Value?.ToString());
-                else if (e.ColumnIndex >= 3) accesoDatos.ActualizarDatosProgramas(dni, DgvBajas.Columns[e.ColumnIndex].Name, DgvBajas.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString());
-            }
-            finally { esCargaInterna = false; }
-        }
-
-        private void DgvBajas_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-        {
-            if (e.ColumnIndex == 0 && DgvBajas.Rows[e.RowIndex].Cells[0].Value != null)
-                dniOriginal = DgvBajas.Rows[e.RowIndex].Cells[0].Value.ToString();
-        }
-
-        private void DgvBajas_CurrentCellDirtyStateChanged(object sender, EventArgs e)
-        {
-            if (DgvBajas.IsCurrentCellDirty && DgvBajas.CurrentCellAddress.X >= 3) DgvBajas.CommitEdit(DataGridViewDataErrorContexts.Commit);
-        }
-
-        // test
-        private void MaterialButton1_Click(object sender, EventArgs e) { accesoDatos.CargarDatos(DgvBajas); ConfigurarGrid(); }
+        private void TxtBuscarDNIoNombre_TextChanged(object sender, EventArgs e) { timerBusqueda.Stop(); timerBusqueda.Start(); }
+        private void BtnNuevoUsuario_Click(object sender, EventArgs e) { new FormNuevoUsuario().ShowDialog(); accesoDatos.CargarDatos(DgvBajas); ConfigurarGrid(); }
+        private void BtnNuevoPrograma_Click(object sender, EventArgs e) { new FormNuevoPrograma().ShowDialog(); accesoDatos.CargarDatos(DgvBajas); ConfigurarGrid(); }
+        private void BtnExportar_Click(object sender, EventArgs e) => accesoDatos.ExportarExcel(accesoDatos.LeerUsuarios(), "Usuarios");
+        private void PictureBox1_Click(object sender, EventArgs e) => Process.Start("https://hospitalcrgijon.com/");
     }
 }
