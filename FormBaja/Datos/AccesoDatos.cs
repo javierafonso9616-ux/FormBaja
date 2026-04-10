@@ -242,7 +242,7 @@ namespace FormBaja.Datos
                                 column.FirstCell().Value.ToString().Contains("FECHA"))
                             {
                                 // Forzamos un formato de fecha corto para que ocupe menos espacio
-                                column.Style.DateFormat.Format = "dd/mm/yyyy";
+                                column.Style.DateFormat.Format = "dd/mm/yyyy HH:mm:ss";
                             }
                         }
 
