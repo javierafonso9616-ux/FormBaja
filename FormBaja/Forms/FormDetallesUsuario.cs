@@ -1,6 +1,4 @@
-﻿using Clases;
-using FormBaja.Datos;
-using MaterialSkin.Controls;
+﻿using FormBaja.Datos;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,174 +12,152 @@ namespace FormBaja.Forms
         private string _dni;
         private AccesoDatos _accesoDatos = new AccesoDatos();
         private FlowLayoutPanel panelContenedor;
+        private DateTimePicker dtpGlobal;
         private List<ControlReferenciaPrograma> controlesProgramas = new List<ControlReferenciaPrograma>();
 
         private struct ControlReferenciaPrograma
         {
             public string NombrePrograma;
             public ComboBox ComboEstado;
-            public DateTimePicker PickerFecha;
         }
 
-        public FormDetallesUsuario(string dni)
+        public FormDetallesUsuario(string dni, string nombre, string apellidos)
         {
             _dni = dni;
             InitializeComponent();
-            
-            this.Text = "SEGUIMIENTO - DNI: " + _dni;
+            this.Text = "SEGUIMIENTO - DNI: " + _dni + " Nombre: " + nombre + " " + apellidos;
+            this.Size = new Size(600, 700);
+            this.StartPosition = FormStartPosition.CenterParent;
 
-            ConfigurarEstructuraBase();
-            CargarDatosUsuario();
+            ConfigurarInterfaz();
+            CargarDatos();
         }
 
-        private void ConfigurarEstructuraBase()
+        private void ConfigurarInterfaz()
         {
-            // 1. Panel para el Footer (Área del botón)
+            // --- LIMPIEZA TOTAL: Borra cualquier control que venga del Diseñador ---
+            this.Controls.Clear();
+
+            // 1. Panel Inferior (Footer) para el Botón
             Panel panelFooter = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 70,
-                BackColor = Color.FromArgb(245, 245, 245) // Gris muy claro para verlo
+                Height = 80,
+                BackColor = Color.FromArgb(230, 230, 230),
+                Padding = new Padding(0, 0, 20, 0)
             };
 
-            // 2. Botón Guardar (Anclado a la derecha del panel footer)
             Button btnGuardar = new Button
             {
                 Text = "GUARDAR CAMBIOS",
-                Height = 40,
-                Width = 150,
-                Dock = DockStyle.Right
+                Size = new Size(160, 45),
+                Dock = DockStyle.Right,
+                BackColor = Color.DarkBlue,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Margin = new Padding(0, 15, 0, 15)
             };
-            btnGuardar.Click += (s, e) => GuardarCambios();
+            btnGuardar.Click += (s, e) => GuardarTodo();
             panelFooter.Controls.Add(btnGuardar);
 
-            // 3. Panel Contenedor con Scroll
+            // 2. Panel Superior (Header) para la Fecha
+            Panel panelFecha = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 80,
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            Label lbl = new Label { Text = "FECHA DE CAMBIO:", Top = 30, Left = 20, AutoSize = true, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+            dtpGlobal = new DateTimePicker { Top = 27, Left = 180, Width = 150, Format = DateTimePickerFormat.Short };
+            panelFecha.Controls.Add(lbl); panelFecha.Controls.Add(dtpGlobal);
+
+            // 3. Panel Central con Scroll (Contenedor)
             panelContenedor = new FlowLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
                 FlowDirection = FlowDirection.TopDown,
                 WrapContents = false,
-                // Padding: 80 arriba para el título, 20 abajo para que no pegue al footer
-                Padding = new Padding(20, 20, 20, 20),
+                Padding = new Padding(20),
                 BackColor = Color.White
             };
 
-            // ORDEN CRÍTICO DE ADICIÓN:
+            // --- ORDEN DE ADICIÓN CRÍTICO PARA EL DOCKING ---
+            // En WinForms, el control con Dock.Fill se debe añadir AL FINAL para que respete a los demás
             this.Controls.Add(panelContenedor);
+            this.Controls.Add(panelFecha);
             this.Controls.Add(panelFooter);
 
-            // ELFooter DEBE ESTAR AL FRENTE para que el Dock=Fill lo respete
-            panelContenedor.SendToBack();
+            // Forzamos visibilidad
             panelFooter.BringToFront();
+            panelFecha.BringToFront();
         }
 
-        private void CargarDatosUsuario()
+        private void CargarDatos()
         {
             panelContenedor.Controls.Clear();
             controlesProgramas.Clear();
 
-            DataTable datos = _accesoDatos.ObtenerDetallesCompletos(_dni);
-            if (datos.Rows.Count == 0) return;
+            DataTable dt = _accesoDatos.ObtenerDetallesCompletos(_dni);
+            if (dt.Rows.Count == 0) return;
+            DataRow fila = dt.Rows[0];
 
-            DataRow fila = datos.Rows[0];
+            if (dt.Columns.Contains("Fecha") && fila["Fecha"] != DBNull.Value)
+                dtpGlobal.Value = Convert.ToDateTime(fila["Fecha"]);
 
-            // Datos del usuario
-            AñadirEtiquetaInformativa("NOMBRE: " + fila["NOMBRE"].ToString());
-            AñadirEtiquetaInformativa("APELLIDOS: " + fila["APELLIDOS"].ToString());
-            panelContenedor.Controls.Add(new Label { Text = "________________________________", AutoSize = true, ForeColor = Color.Gray, Margin = new Padding(0, 0, 0, 20) });
+            AñadirEtiqueta("USUARIO: " + fila["NOMBRE"] + " " + fila["APELLIDOS"]);
+            panelContenedor.Controls.Add(new Label { Text = "____________________________________", AutoSize = true, ForeColor = Color.Gray, Margin = new Padding(0, 0, 0, 20) });
 
-            foreach (DataColumn col in datos.Columns)
+            foreach (DataColumn col in dt.Columns)
             {
-                string nombreCol = col.ColumnName;
-                if (nombreCol == "DNI" || nombreCol == "NOMBRE" || nombreCol == "APELLIDOS" || nombreCol.EndsWith("_Fecha"))
-                    continue;
-
-                object valorFecha = datos.Columns.Contains(nombreCol + "_Fecha") ? fila[nombreCol + "_Fecha"] : DBNull.Value;
-                CrearFilaPrograma(nombreCol, fila[nombreCol]?.ToString(), valorFecha);
+                string nom = col.ColumnName;
+                if (nom == "DNI" || nom == "NOMBRE" || nom == "APELLIDOS" || nom == "Fecha" || nom.EndsWith("_Fecha")) continue;
+                CrearFila(nom, fila[nom]?.ToString());
             }
 
-            // --- EL ESPACIADOR  ---
-            // Añade un Label vacío de 40px de alto para asegurar que el scroll baje del todo
-            panelContenedor.Controls.Add(new Label { Text = "", Height = 100, Width = 10 });
+            // Espaciador final para que el scroll suba el último elemento por encima del footer
+            panelContenedor.Controls.Add(new Label { Height = 100, Width = 10 });
         }
 
-        private void CrearFilaPrograma(string programa, string estadoActual, object fechaActual)
+        private void CrearFila(string prog, string estado)
         {
-            // Bajamos el ancho a 650 o 680 para asegurar que el scroll no tape el DatePicker
-            Panel fila = new Panel { Width = 650, Height = 120, Margin = new Padding(0, 10, 0, 0) };
+            Panel p = new Panel { Width = 520, Height = 60, Margin = new Padding(0, 0, 0, 10) };
+            Label l = new Label { Text = prog.ToUpper(), Top = 15, Width = 280, Font = new Font("Segoe UI", 10) };
+            ComboBox c = new ComboBox { Top = 12, Left = 300, Width = 150, DropDownStyle = ComboBoxStyle.DropDownList, FlatStyle = FlatStyle.Standard };
+            c.Items.AddRange(new object[] { "", "ACTIVO", "INACTIVO" });
+            c.Text = estado;
 
-            Label lblProg = new Label
-            {
-                Text = programa.ToUpper(),
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                Top = 5,
-                Width = 600
-            };
-
-            ComboBox cbEstado = new ComboBox
-            {
-                Top = 35,
-                Width = 150,
-                FlatStyle = FlatStyle.Standard,
-                DropDownStyle = ComboBoxStyle.DropDownList // Evita que escriban cosas raras
-            };
-            cbEstado.Items.AddRange(new object[] { "", "ACTIVO", "INACTIVO" });
-            cbEstado.Text = estadoActual;
-
-            Label lblFecha = new Label { Text = "Fecha:", Top = 70, Left = 0, Width = 120, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
-            DateTimePicker dtp = new DateTimePicker
-            {
-                Top = 68,
-                Left = 130,
-                Width = 200,
-                Format = DateTimePickerFormat.Short
-            };
-
-            if (fechaActual != DBNull.Value) dtp.Value = Convert.ToDateTime(fechaActual);
-
-            fila.Controls.Add(lblProg);
-            fila.Controls.Add(cbEstado);
-            fila.Controls.Add(lblFecha);
-            fila.Controls.Add(dtp);
-
-            panelContenedor.Controls.Add(fila);
-
-            controlesProgramas.Add(new ControlReferenciaPrograma
-            {
-                NombrePrograma = programa,
-                ComboEstado = cbEstado,
-                PickerFecha = dtp
-            });
+            /*
+            c.SelectedIndexChanged += (s, e) => PintarCombo((ComboBox)s);
+            PintarCombo(c);
+            */
+            p.Controls.Add(l); p.Controls.Add(c);
+            panelContenedor.Controls.Add(p);
+            controlesProgramas.Add(new ControlReferenciaPrograma { NombrePrograma = prog, ComboEstado = c });
         }
 
-        private void AñadirEtiquetaInformativa(string texto)
+        /*private void PintarCombo(ComboBox cb)
         {
-            panelContenedor.Controls.Add(new Label
-            {
-                Text = texto,
-                AutoSize = true,
-                Font = new Font("Segoe UI", 11, FontStyle.Regular),
-                Margin = new Padding(0, 5, 0, 5)
-            });
+            if (cb.Text == "ACTIVO") cb.ForeColor = Color.Green;
+            else if (cb.Text == "INACTIVO") cb.ForeColor = Color.Red;
+            else cb.ForeColor = Color.Black;
         }
+        */
+        private void AñadirEtiqueta(string t) => panelContenedor.Controls.Add(new Label { Text = t, AutoSize = true, Font = new Font("Segoe UI", 11, FontStyle.Bold) });
 
-        private void GuardarCambios()
+        private void GuardarTodo()
         {
             try
             {
-                foreach (var prog in controlesProgramas)
-                {
-                    _accesoDatos.ActualizarProgramaConFecha(_dni, prog.NombrePrograma, prog.ComboEstado.Text, prog.PickerFecha.Value);
-                }
-                MessageBox.Show("Datos guardados correctamente.");
+                foreach (var cp in controlesProgramas)
+                    _accesoDatos.ActualizarEstadoYFechaGlobal(_dni, cp.NombrePrograma, cp.ComboEstado.Text, dtpGlobal.Value);
+                MessageBox.Show("Guardado con éxito.");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al guardar: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
     }
 }
